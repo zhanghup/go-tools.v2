@@ -1,0 +1,9 @@
+.idea
+*.sum
+*.exe
+logs
+*.db
+*.db-journal
+
+data.dat
+upload
