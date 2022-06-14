@@ -2,7 +2,6 @@ package tools
 
 import (
 	"bytes"
-	"strings"
 	"text/template"
 )
 
@@ -14,11 +13,9 @@ type myStringTemplate struct {
 	param any
 }
 
-func StrTmp(str string, param ...any) myStringTemplate {
+func TextTemplate(str string, param ...any) myStringTemplate {
 	tt := template.New(UUID())
-	fmap := template.FuncMap{
-		"title": strings.Title,
-	}
+	fmap := template.FuncMap{}
 
 	result := myStringTemplate{
 		tpl: tt,
@@ -45,11 +42,11 @@ func (this myStringTemplate) String() string {
 	data := bytes.NewBuffer(nil)
 	tpl, err := this.tpl.Funcs(this.fns).Parse(this.str)
 	if err != nil {
-		return StrFmt("[1] 模板格式化异常,error:%s", err.Error())
+		return Fmt("[1] 模板格式化异常,error:%s", err.Error())
 	}
 	err = tpl.Execute(data, this.param)
 	if err != nil {
-		return StrFmt("[2] 模板格式化异常,error:%s", err.Error())
+		return Fmt("[2] 模板格式化异常,error:%s", err.Error())
 	}
 	return data.String()
 

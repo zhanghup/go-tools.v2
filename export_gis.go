@@ -9,9 +9,9 @@ import (
 // BD09坐标系：即百度坐标系，GCJ02坐标系经加密后的坐标系。
 
 const (
-	X_PI   = math.Pi * 3000.0 / 180.0
-	OFFSET = 0.00669342162296594323
-	AXIS   = 6378245.0
+	x_pi   = math.Pi * 3000.0 / 180.0
+	offset = 0.00669342162296594323
+	axis   = 6378245.0
 )
 
 //BD09toGCJ02 百度坐标系->火星坐标系
@@ -19,8 +19,8 @@ func BD09toGCJ02(lon, lat float64) (float64, float64) {
 	x := lon - 0.0065
 	y := lat - 0.006
 
-	z := math.Sqrt(x*x+y*y) - 0.00002*math.Sin(y*X_PI)
-	theta := math.Atan2(y, x) - 0.000003*math.Cos(x*X_PI)
+	z := math.Sqrt(x*x+y*y) - 0.00002*math.Sin(y*x_pi)
+	theta := math.Atan2(y, x) - 0.000003*math.Cos(x*x_pi)
 
 	gLon := z * math.Cos(theta)
 	gLat := z * math.Sin(theta)
@@ -30,8 +30,8 @@ func BD09toGCJ02(lon, lat float64) (float64, float64) {
 
 //GCJ02toBD09 火星坐标系->百度坐标系
 func GCJ02toBD09(lon, lat float64) (float64, float64) {
-	z := math.Sqrt(lon*lon+lat*lat) + 0.00002*math.Sin(lat*X_PI)
-	theta := math.Atan2(lat, lon) + 0.000003*math.Cos(lon*X_PI)
+	z := math.Sqrt(lon*lon+lat*lat) + 0.00002*math.Sin(lat*x_pi)
+	theta := math.Atan2(lat, lon) + 0.000003*math.Cos(lon*x_pi)
 
 	bdLon := z*math.Cos(theta) + 0.0065
 	bdLat := z*math.Sin(theta) + 0.006
@@ -79,11 +79,11 @@ func __delta(lon, lat float64) (float64, float64) {
 
 	radlat := lat / 180.0 * math.Pi
 	magic := math.Sin(radlat)
-	magic = 1 - OFFSET*magic*magic
+	magic = 1 - offset*magic*magic
 	sqrtmagic := math.Sqrt(magic)
 
-	dlat = (dlat * 180.0) / ((AXIS * (1 - OFFSET)) / (magic * sqrtmagic) * math.Pi)
-	dlon = (dlon * 180.0) / (AXIS / sqrtmagic * math.Cos(radlat) * math.Pi)
+	dlat = (dlat * 180.0) / ((axis * (1 - offset)) / (magic * sqrtmagic) * math.Pi)
+	dlon = (dlon * 180.0) / (axis / sqrtmagic * math.Cos(radlat) * math.Pi)
 
 	mgLat := lat + dlat
 	mgLon := lon + dlon

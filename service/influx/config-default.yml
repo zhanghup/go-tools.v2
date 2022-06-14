@@ -1,0 +1,10 @@
+# influxdb数据库
+influxdb:
+  # zander
+  bucket:
+  # zander
+  org:
+  # 4Pw44cq_aLgT7nFNqLczHXAYLtyJg7c9FFnGHPdi2AOOkkFP53GsHyrv-CvsO9-e63IY2iG0yuwCFMNPGKkxBA==
+  token:
+  # http://localhost:8086
+  url:

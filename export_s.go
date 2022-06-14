@@ -1,37 +1,15 @@
 package tools
 
 import (
-	"encoding/json"
-	"fmt"
 	"github.com/satori/go.uuid"
 	"math/rand"
-	"reflect"
-	"regexp"
 	"strings"
 	"time"
 )
 
-/*
-	快速操作字符串
-*/
-
-var strfmtregex = regexp.MustCompile("{{.*?}}")
-
-func StrFmt(format string, args ...any) string {
-	if strfmtregex.MatchString(format) && len(args) > 0 && reflect.TypeOf(args[0]).Kind() == reflect.Map {
-		return StrTmp(format, args...).String()
-	}
-
-	params := make([]any, 0)
-	for _, p := range args {
-		params = append(params, Rft.RealValue(p))
-	}
-	return fmt.Sprintf(format, params...)
-}
-
-// StrEqual 比较两个字符串数组是否相同
+// Equal 比较两个字符串数组是否相同
 // flag: 是否顺序也必须相同
-func StrEqual(source []string, dist []string, flag ...bool) bool {
+func Equal[T comparable](source []T, dist []T, flag ...bool) bool {
 	if len(source) != len(dist) {
 		return false
 	}
@@ -46,7 +24,7 @@ func StrEqual(source []string, dist []string, flag ...bool) bool {
 		return true
 	}
 
-	smap := map[string]struct{}{}
+	smap := map[T]struct{}{}
 	for _, s := range source {
 		smap[s] = struct{}{}
 	}
@@ -73,33 +51,8 @@ func UUID_() string {
 	return strings.ReplaceAll(id.String(), "-", "_")
 }
 
-// JSONString 以json格式输出struct对象,format判断时间将json格式化
-func JSONString(obj any, format ...bool) string {
-	if obj == nil {
-		return ""
-	}
-	var datas []byte
-	if len(format) > 0 && format[0] {
-
-		r, err := json.MarshalIndent(obj, "", "\t")
-		if err != nil {
-			datas = []byte("数据格式化异常")
-		} else {
-			datas = r
-		}
-	} else {
-		r, err := json.Marshal(obj)
-		if err != nil {
-			datas = []byte("数据格式化异常")
-		} else {
-			datas = r
-		}
-	}
-	return string(datas)
-}
-
-// StrContains 判断字符串是否包含在数组中
-func StrContains(src []string, tag string) bool {
+// Contains 判断字符串是否包含在数组中
+func Contains[T comparable](src []T, tag T) bool {
 	for _, s := range src {
 		if s == tag {
 			return true
