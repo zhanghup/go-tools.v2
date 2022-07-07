@@ -1,4 +1,4 @@
-package lorm
+package lorm2
 
 import (
 	"fmt"
@@ -8,12 +8,12 @@ import (
 	"strings"
 )
 
-func (this *session[T]) Order(order ...string) *session[T] {
+func (this *Session) Order(order ...string) ISession {
 	this.orderby = order
 	return this
 }
 
-func (this *session[T]) SF(sql string, querys ...any) *session[T] {
+func (this *Session) SF(sql string, querys ...any) ISession {
 	sql = strings.TrimSpace(sql)
 
 	// 重置排序功能
@@ -49,18 +49,18 @@ func (this *session[T]) SF(sql string, querys ...any) *session[T] {
 		},
 	}
 	// tmp模板
-	sql = tools.TextTemplate(sql, query).FuncMap(tools.Merge(m1, getTemplates(this.engine.db))).String()
+	sql = tools.TextTemplate(sql, query).FuncMap(tools.Merge(m1, this.tmps)).String()
 	// context 模板
 	this.sql = tools.TextTemplate(sql, map[string]any{
 		"ctx": this.context,
-	}).FuncMap(getTemplates(this.engine.db)).String()
+	}).FuncMap(this.tmpCtxs).String()
 
 	this.args = make([]any, 0)
 	this.sf_args()
 	return this
 }
 
-func (this *session[T]) sf_args() *session[T] {
+func (this *Session) sf_args() ISession {
 	r := regexp.MustCompile(`:[0-9a-zA-Z_]+`)
 	ss := r.FindAllString(this.sql, -1)
 	for _, s := range ss {
@@ -74,7 +74,7 @@ func (this *session[T]) sf_args() *session[T] {
 	return this
 }
 
-func (this *session[T]) sf_args_item(key string, value reflect.Value) *session[T] {
+func (this *Session) sf_args_item(key string, value reflect.Value) ISession {
 	ty := value.Type()
 	switch ty.Kind() {
 	case reflect.Ptr:

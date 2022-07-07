@@ -1,4 +1,4 @@
-package lorm
+package lorm2
 
 type Tables []Table
 

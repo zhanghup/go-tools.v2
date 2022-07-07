@@ -6,128 +6,72 @@ import (
 	"xorm.io/xorm"
 )
 
-type ISession interface {
-	Id() string
-	SetId(id string)
-	IsNew() bool
-	Ctx() context.Context
-
-	Table(bean any) ISession
-	Find(bean any) error
-	Get(bean any) (bool, error)
-
-	Insert(bean ...any) error
-	Update(bean any, condiBean ...any) error
-	Delete(bean ...any) error
-	Exec() error
-	/*
-		示例1：
-			sql = "select * from user where a = ? and b = ?"
-			querys = []interface{}{"a","b"}
-		示例2：
-			sql = "select * from user where a = :a and b = ?"
-			querys = []interface{}{"b",map[string]interface{}{"a":"a"}}
-		示例3：
-			sql = "where a = ?"
-			querys = []interface{}{"b"}
-			bean = models.User
-			>>> select user.* from user where a = ?
-	*/
-	SF(sql string, querys ...any) ISession
-	Order(order ...string) ISession
-
-	Page(index, size int, count bool, bean any) (int, error)
-	Page2(index, size *int, count *bool, bean any) (int, error)
-	Count() (int64, error)
-	Int() (int, error)
-	Int64() (int64, error)
-	Float64() (float64, error)
-	String() (string, error)
-	Strings() ([]string, error)
-	Exists() (bool, error)
-
-	Map() ([]map[string]any, error)
-	MapString() (v []map[string]string, err error)
+type sessionEngine struct {
+	id        string
+	autoClose bool
+	db        *xorm.Engine
+	sess      *xorm.Session
 }
 
-type Session struct {
-	id      string
+type session[T any] struct {
 	context context.Context
-	isNew   bool
-
-	// xorm session
-	sess    *xorm.Session
-	_engine *Engine
-	_db     *xorm.Engine
+	engine  sessionEngine
 
 	tableName string
 	sql       string
 	query     map[string]any
 	args      []any
 
-	autoClose bool
-
-	tmps     map[string]any
-	tmpWiths map[string]any
-	tmpCtxs  map[string]any
-
 	withs   []string
 	orderby []string
 }
 
-func (this *Session) IsNew() bool {
-	return this.isNew
-}
-func (this *Session) Ctx() context.Context {
-	if this.context == nil {
-		this.context = context.Background()
+func (s *session[T]) Context() context.Context {
+	if s.context == nil {
+		s.context = context.Background()
 	}
-	return context.WithValue(this.context, CONTEXT_SESSION, this)
+	return context.WithValue(s.context, CONTEXT_SESSION, s.engine)
 }
 
-func (this *Session) AutoClose(fn func() error) error {
+func (s *session[T]) Id() string {
+	return s.engine.id
+}
+
+func (s *session[T]) _autoClose(fn func() error) error {
 	err := fn()
 	if err != nil {
 		return err
 	}
-	this.tableName = ""
+	s.tableName = ""
 
-	if this.autoClose {
-		return this.Close()
+	if s.engine.autoClose {
+		return s.Close()
 	}
 	return nil
 }
 
 // Close 自动关闭session
-func (this *Session) Close() error {
-	if this.sess.IsClosed() {
+func (s *session[T]) Close() error {
+	if s.engine.sess.IsClosed() {
 		return nil
 	}
-	return this.sess.Close()
+	return s.engine.sess.Close()
 }
 
-func (this *Session) Id() string {
-	return this.id
-}
-
-func (this *Session) SetId(id string) {
-	this.id = id
-}
-
-func (this *Session) Table(bean any) ISession {
-	if this.tableName != "" {
-		return this
+func (s *session[T]) Table(bean any) *session[T] {
+	if s.tableName != "" {
+		return s
 	}
 
 	switch bean.(type) {
 	case string:
-		this.tableName = bean.(string)
+		s.tableName = bean.(string)
 	case *string:
-		this.tableName = *(bean.(*string))
+		s.tableName = *(bean.(*string))
 	default:
 		tab := tools.RftTypeInfo(bean)
-		this.tableName = this._db.GetTableMapper().Obj2Table(tab.Name)
+		s.tableName = s.engine.db.GetTableMapper().Obj2Table(tab.Name)
 	}
 
-	return this
+	return s
 }
