@@ -86,14 +86,8 @@ func BytesToData[T any](b []byte) T {
 }
 
 // Merge 将多个map合并为一个新的map
-func Merge[Value any](m1 map[string]Value, m2 ...map[string]Value) map[string]Value {
+func Merge[Value any](m2 ...map[string]Value) map[string]Value {
 	result := map[string]Value{}
-
-	if m1 != nil {
-		for k, v := range m1 {
-			result[k] = v
-		}
-	}
 
 	if len(m2) > 0 {
 		for _, mm := range m2 {

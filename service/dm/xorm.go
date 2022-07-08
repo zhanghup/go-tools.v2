@@ -1,4 +1,4 @@
-package lorm
+package dm
 
 import (
 	_ "embed"

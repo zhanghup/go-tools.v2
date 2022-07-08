@@ -1,4 +1,4 @@
-package lorm
+package dm
 
 import (
 	"context"
@@ -6,7 +6,8 @@ import (
 	"xorm.io/xorm"
 )
 
-func Session[T any](db *xorm.Engine) *session[T] {
+func Session[T any](db *xorm.Engine) ISession[T] {
+
 	newSession := &session[T]{
 		engine: sessionEngine{
 			id:        tools.UUID(),
@@ -16,16 +17,22 @@ func Session[T any](db *xorm.Engine) *session[T] {
 		},
 	}
 
-	newSession.context = context.WithValue(context.Background(), CONTEXT_SESSION, newSession.engine)
+	newSession.engine.context = context.WithValue(context.Background(), CONTEXT_SESSION, newSession.engine)
+	newSession.sfs = newSessionSf[T](db, newSession.engine.context)
 	return newSession
 }
 
-func Context[T any](db *xorm.Engine, ctx context.Context) *session[T] {
+func Context[T any](db *xorm.Engine, ctx context.Context) ISession[T] {
+	if ctx == nil {
+		ctx = context.Background()
+	}
+
 	v := ctx.Value(CONTEXT_SESSION)
 	if v != nil {
 		sessOld, ok := v.(sessionEngine)
 		if ok && !sessOld.sess.IsClosed() {
-			return &session[T]{context: ctx, engine: sessOld}
+			sessOld.context = ctx
+			return &session[T]{engine: sessOld, sfs: newSessionSf[T](db, ctx)}
 		}
 	}
 
@@ -38,13 +45,18 @@ func Context[T any](db *xorm.Engine, ctx context.Context) *session[T] {
 		},
 	}
 
-	newSession.context = context.WithValue(ctx, CONTEXT_SESSION, newSession.engine)
+	newSession.engine.context = context.WithValue(ctx, CONTEXT_SESSION, newSession.engine)
+	newSession.sfs = newSessionSf[T](db, newSession.engine.context)
 	return newSession
 }
 
 func TS(ctx context.Context, db *xorm.Engine, fn func(ctx context.Context) error) error {
+	if ctx == nil {
+		ctx = context.Background()
+	}
+
 	commit := ctx.Value(CONTEXT_SESSION)
-	sess := Context[int](db, ctx)
+	sess := Context[any](db, ctx).(*session[any])
 	if commit == nil {
 		_ = sess.engine.sess.Begin()
 	}
