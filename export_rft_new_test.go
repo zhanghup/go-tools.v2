@@ -2,7 +2,7 @@ package tools_test
 
 import (
 	"fmt"
-	"github.com/zhanghup/go-tools"
+	"github.com/zhanghup/go-tools.v2"
 	"reflect"
 	"testing"
 	"xorm.io/xorm"

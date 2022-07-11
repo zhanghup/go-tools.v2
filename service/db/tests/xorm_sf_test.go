@@ -3,7 +3,7 @@ package tests
 import (
 	"context"
 	"fmt"
-	"github.com/zhanghup/go-tools/service/db"
+	"github.com/zhanghup/go-tools.v2/service/db"
 	"testing"
 )
 

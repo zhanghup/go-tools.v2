@@ -2,7 +2,7 @@ package buntdb
 
 import (
 	"github.com/tidwall/buntdb"
-	"github.com/zhanghup/go-tools"
+	"github.com/zhanghup/go-tools.v2"
 	"time"
 )
 

@@ -1,7 +1,7 @@
 package db
 
 import (
-	"github.com/zhanghup/go-tools/service/dm"
+	"github.com/zhanghup/go-tools.v2/service/dm"
 	"xorm.io/xorm"
 )
 

@@ -3,7 +3,7 @@ package dm
 import (
 	"context"
 	"fmt"
-	"github.com/zhanghup/go-tools"
+	"github.com/zhanghup/go-tools.v2"
 	"xorm.io/xorm"
 )
 

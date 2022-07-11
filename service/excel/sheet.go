@@ -2,7 +2,7 @@ package extraction
 
 import (
 	"fmt"
-	"hub.ffcode.net/ffcode/framework/utils"
+	"github.com/zhanghup/go-tools.v2"
 	"strings"
 )
 
@@ -132,7 +132,7 @@ func (this *Sheet) DataMap() []Row {
 	// 数据所在行设定
 	idx := this.dataIdx
 	if idx == nil {
-		idx = utils.PtrOfInt(1)
+		idx = tools.Ptr(1)
 	}
 
 	// 列定义
@@ -142,10 +142,10 @@ func (this *Sheet) DataMap() []Row {
 	for i := *idx; i < len(this.DataList); i++ {
 		item := map[string]Cell{}
 
-		for j := 0; j < len(headers); j++{
+		for j := 0; j < len(headers); j++ {
 			key := headers[j]
 
-			if j < len(this.DataList[i]){
+			if j < len(this.DataList[i]) {
 				cell := this.DataList[i][j]
 				ctype, ok := typeMap[key]
 				if ok {
@@ -154,7 +154,7 @@ func (this *Sheet) DataMap() []Row {
 				} else {
 					item[key] = cell
 				}
-			}else{
+			} else {
 				item[key] = Cell{
 					Config: this.Config,
 				}

@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/zhanghup/go-tools/lib/pinyin"
+	"github.com/zhanghup/go-tools.v2/lib/pinyin"
 	"reflect"
 	"regexp"
 	"strconv"

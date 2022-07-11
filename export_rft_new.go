@@ -14,7 +14,7 @@ import (
 	Type 表示最终引用对象的类型，可以反射出一个新的实例
 
 	示例：RftTypeInfo(make([]*RftTypeInfoView,0))
-	结果： {"name":"RftTypeInfoView","full_name":"[]*RftTypeInfoView","pkg_path":"github.com/zhanghup/go-tools"}
+	结果： {"name":"RftTypeInfoView","full_name":"[]*RftTypeInfoView","pkg_path":"github.com/zhanghup/go-tools.v2"}
 
 */
 type RftTypeInfoView struct {

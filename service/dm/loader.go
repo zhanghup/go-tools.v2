@@ -3,8 +3,8 @@ package dm
 import (
 	"context"
 	"fmt"
-	"github.com/zhanghup/go-tools"
-	"github.com/zhanghup/go-tools/service/loader"
+	"github.com/zhanghup/go-tools.v2"
+	"github.com/zhanghup/go-tools.v2/service/loader"
 	"reflect"
 	"regexp"
 	"strings"

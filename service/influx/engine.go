@@ -6,8 +6,8 @@ import (
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 	"github.com/influxdata/influxdb-client-go/v2/api"
 	"github.com/influxdata/influxdb-client-go/v2/api/write"
-	"github.com/zhanghup/go-tools"
-	"github.com/zhanghup/go-tools/service/tog"
+	"github.com/zhanghup/go-tools.v2"
+	"github.com/zhanghup/go-tools.v2/service/tog"
 	"sync"
 	"time"
 )

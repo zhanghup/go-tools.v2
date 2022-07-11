@@ -1,7 +1,7 @@
 package extraction
 
 import (
-	"hub.ffcode.net/ffcode/framework/integration/extraction/xls"
+	"github.com/zhanghup/go-tools.v2/lib/xls"
 	"io"
 	"os"
 	"strings"

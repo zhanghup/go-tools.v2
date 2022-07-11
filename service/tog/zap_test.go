@@ -2,7 +2,7 @@ package tog_test
 
 import (
 	_ "embed"
-	"github.com/zhanghup/go-tools/service/tog"
+	"github.com/zhanghup/go-tools.v2/service/tog"
 	"go.uber.org/zap"
 	"os"
 	"testing"

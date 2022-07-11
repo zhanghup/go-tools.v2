@@ -3,7 +3,7 @@ package xls
 import (
 	"encoding/binary"
 	"errors"
-	"github.com/zhanghup/go-tools/database/txlsx/xls/commonxl"
+	"github.com/zhanghup/go-tools.v2/lib/xls/commonxl"
 	"log"
 	"math"
 	"unicode/utf16"

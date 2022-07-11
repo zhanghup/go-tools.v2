@@ -1,7 +1,7 @@
 package tests
 
 import (
-	"github.com/zhanghup/go-tools/service/db"
+	"github.com/zhanghup/go-tools.v2/service/db"
 )
 
 type User struct {

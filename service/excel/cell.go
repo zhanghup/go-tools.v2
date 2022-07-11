@@ -1,8 +1,8 @@
 package extraction
 
 import (
-	"github.com/zhanghup/go-tools"
-	"github.com/zhanghup/go-tools/service/tog"
+	"github.com/zhanghup/go-tools.v2"
+	"github.com/zhanghup/go-tools.v2/service/tog"
 	"strconv"
 	"strings"
 	"time"

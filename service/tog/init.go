@@ -2,7 +2,7 @@ package tog
 
 import (
 	_ "embed"
-	"github.com/zhanghup/go-tools"
+	"github.com/zhanghup/go-tools.v2"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"gopkg.in/natefinch/lumberjack.v2"

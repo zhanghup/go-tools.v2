@@ -2,7 +2,7 @@ package db
 
 import (
 	"context"
-	"github.com/zhanghup/go-tools/service/dm"
+	"github.com/zhanghup/go-tools.v2/service/dm"
 )
 
 func Session[T any]() dm.ISession[T] {

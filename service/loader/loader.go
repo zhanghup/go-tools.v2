@@ -2,7 +2,7 @@ package loader
 
 import (
 	"fmt"
-	"github.com/zhanghup/go-tools"
+	"github.com/zhanghup/go-tools.v2"
 	"reflect"
 	"time"
 )
