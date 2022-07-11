@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/zhanghup/go-tools.v2/service/dm"
 )
 
