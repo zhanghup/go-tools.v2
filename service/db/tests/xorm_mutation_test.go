@@ -1,24 +1,29 @@
 package tests
 
 import (
+	"fmt"
 	"github.com/zhanghup/go-tools.v2"
 	"github.com/zhanghup/go-tools.v2/service/db"
 	"testing"
 )
 
 func TestInsert(t *testing.T) {
-	err := db.Session[User]().Insert(User{
-		Id:   tools.UUID(),
-		Name: "zander",
-		Age:  10,
 
-		Username: "zander",
-		Password: "Aa123456.",
-	})
+	for i := 0; i < 10; i++ {
+		err := db.Session[User]().Insert(User{
+			Id:   tools.UUID(),
+			Name: "zander",
+			Age:  i,
 
-	if err != nil {
-		t.Fatal(err)
+			Username: fmt.Sprintf("%d", i),
+			Password: "Aa123456.",
+		})
+
+		if err != nil {
+			t.Fatal(err)
+		}
 	}
+
 }
 
 func TestUpdate(t *testing.T) {

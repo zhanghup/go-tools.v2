@@ -171,9 +171,7 @@ func (s *sessionSF[T]) SQL(orderFlag, selectArg bool, columns ...string) string 
 	}
 
 	s.sqlParam = query
-
-	s.args(sqlstr)
-	return sqlstr
+	return s.args(sqlstr)
 }
 
 func (s *sessionSF[T]) Limit(n int) *sessionSF[T] {
@@ -186,9 +184,9 @@ func (s *sessionSF[T]) Skip(n int) *sessionSF[T] {
 	return s
 }
 
-func (s *sessionSF[T]) args(sqlstring string) *sessionSF[T] {
+func (s *sessionSF[T]) args(sqlstring string) string {
 
-	r := regexp.MustCompile(`:[0-9a-zA-Z_]+`)
+	r := regexp.MustCompile(`\:[0-9a-zA-Z_]+`)
 	ss := r.FindAllString(sqlstring, -1)
 
 	result := make([]any, 0)
@@ -205,7 +203,7 @@ func (s *sessionSF[T]) args(sqlstring string) *sessionSF[T] {
 
 	}
 	s.sqlArgs = result
-	return s
+	return sqlstring
 }
 
 func (s *sessionSF[T]) sf_args_item(sqlstring, key string, value reflect.Value) (string, []any) {

@@ -10,6 +10,7 @@ import (
 	"reflect"
 	"regexp"
 	"strconv"
+	"sync"
 )
 
 /*
@@ -142,4 +143,32 @@ func Ptr[T any](v T) *T {
 
 func PtrOfUUID() *string {
 	return Ptr(UUID())
+}
+
+func WaitPage(total, size int, fn func(page int)) {
+	cnt := 0
+
+	if size < 1 {
+		cnt = total
+	} else if total%size == 0 {
+		cnt = total / size
+	} else {
+		cnt = int(total/size) + 1
+	}
+
+	Wait(cnt, fn)
+}
+
+func Wait(n int, fn func(nn int)) {
+	g := sync.WaitGroup{}
+
+	for i := 0; i < n; i++ {
+		g.Add(1)
+		go func(nn int) {
+			fn(nn)
+			g.Done()
+		}(i)
+	}
+
+	g.Wait()
 }

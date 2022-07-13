@@ -54,7 +54,7 @@ func sliceLoader[Result any](db *xorm.Engine, ctx context.Context, beanNameOrSql
 			sess = Context[LoaderResultItem[Result]](db, ctx)
 		}
 
-		res, err := sess.SF(sqlFormat(beanNameOrSql, field), append(param, map[string]any{"keys": keys})...).Find()
+		res, err := sess.SF(sqlFormat(beanNameOrSql, field), append([]any{map[string]any{"keys": keys}}, param...)...).Find()
 
 		result := map[string][]Result{}
 
@@ -103,7 +103,7 @@ func infoLoader[Result any](db *xorm.Engine, ctx context.Context, beanNameOrSql 
 			sess = Context[LoaderResultItem[Result]](db, ctx)
 		}
 
-		res, err := sess.SF(sqlFormat(beanNameOrSql, field), param, map[string]any{"keys": keys}).Find()
+		res, err := sess.SF(sqlFormat(beanNameOrSql, field), append([]any{map[string]any{"keys": keys}}, param...)...).Find()
 
 		result := map[string]Result{}
 
