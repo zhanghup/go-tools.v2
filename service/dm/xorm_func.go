@@ -37,3 +37,7 @@ func SF[T any](ctx context.Context, db *xorm.Engine, sqlstr string, querys ...an
 func Insert[T any](ctx context.Context, db *xorm.Engine, bean T) error {
 	return inSession[T](ctx, db).Insert(bean)
 }
+
+func Find[T any](ctx context.Context, db *xorm.Engine) ([]T, error) {
+	return inSession[T](ctx, db).Find()
+}
