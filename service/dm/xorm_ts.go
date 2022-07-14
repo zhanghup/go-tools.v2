@@ -27,13 +27,8 @@ func Context[T any](db *xorm.Engine, ctx context.Context) ISession[T] {
 		ctx = context.Background()
 	}
 
-	v := ctx.Value(CONTEXT_SESSION)
-	if v != nil {
-		sessOld, ok := v.(sessionEngine)
-		if ok && !sessOld.sess.IsClosed() {
-			sessOld.context = ctx
-			return &session[T]{engine: sessOld, sfs: newSessionSf[T](db, ctx)}
-		}
+	if v, ok := hasSession(ctx); ok {
+		return &session[T]{engine: v, sfs: newSessionSf[T](db, ctx)}
 	}
 
 	newSession := &session[T]{

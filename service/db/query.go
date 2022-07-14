@@ -1,7 +1,10 @@
 package db
 
-import "github.com/zhanghup/go-tools.v2/service/dm"
+import (
+	"context"
+	"github.com/zhanghup/go-tools.v2/service/dm"
+)
 
-func SF(sqlstr string, querys ...any) dm.ISession[any] {
-	return dm.SF[any](engine, sqlstr, querys...)
+func SF(ctx context.Context, sqlstr string, querys ...any) dm.ISession[any] {
+	return dm.SF[any](ctx, engine, sqlstr, querys...)
 }
