@@ -13,6 +13,6 @@ func SFC[T any](ctx context.Context, sqlstr string, querys ...any) dm.ISession[T
 	return dm.SF[T](ctx, engine, sqlstr, querys...)
 }
 
-func Find[T any](ctx context.Context) ([]T, error) {
-	return dm.Find[T](ctx, engine)
+func Find[T any](ctx context.Context, sqlOrArgs ...any) ([]T, error) {
+	return dm.Find[T](ctx, engine, sqlOrArgs...)
 }

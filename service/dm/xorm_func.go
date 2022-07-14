@@ -2,6 +2,7 @@ package dm
 
 import (
 	"context"
+	"errors"
 	"xorm.io/xorm"
 )
 
@@ -38,6 +39,16 @@ func Insert[T any](ctx context.Context, db *xorm.Engine, bean T) error {
 	return inSession[T](ctx, db).Insert(bean)
 }
 
-func Find[T any](ctx context.Context, db *xorm.Engine) ([]T, error) {
-	return inSession[T](ctx, db).Find()
+func Find[T any](ctx context.Context, db *xorm.Engine, sqlOrArgs ...any) ([]T, error) {
+	s := inSession[T](ctx, db)
+	if len(sqlOrArgs) > 0 {
+		switch sqlOrArgs[0].(type) {
+		case string:
+			return s.SF(sqlOrArgs[0].(string), sqlOrArgs[1:]...).Find()
+		default:
+			return nil, errors.New("sqlOrArgs异常")
+		}
+	}
+
+	return s.Find()
 }
