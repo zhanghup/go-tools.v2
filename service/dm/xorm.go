@@ -27,16 +27,11 @@ func InitXorm(ymlData ...[]byte) (*xorm.Engine, error) {
 		Db Config `json:"db" yaml:"db"`
 	}{}
 
-	err := tools.ConfOfByte(defaultConfig, &cfg)
-	if err != nil {
-		return nil, err
-	}
-
-	for _, data := range ymlData {
+	for _, data := range append(ymlData, defaultConfig) {
 		if data == nil {
 			continue
 		}
-		err = tools.ConfOfByte(data, &cfg)
+		err := tools.ConfOfByte(data, &cfg)
 		if err != nil {
 			return nil, err
 		}

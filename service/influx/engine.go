@@ -45,13 +45,8 @@ func InitEngine(cfg ...[]byte) IEngine {
 		Influxdb Option `json:"influxdb"`
 	}{}
 
-	err := tools.ConfOfByte(initConfigByte, &opt)
-	if err != nil {
-		panic(err)
-	}
-
-	for _, s := range cfg {
-		err = tools.ConfOfByte(s, &opt)
+	for _, s := range append(cfg, initConfigByte) {
+		err := tools.ConfOfByte(s, &opt)
 		if err != nil {
 			panic(err)
 		}

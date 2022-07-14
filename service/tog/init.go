@@ -41,17 +41,13 @@ func NewLogger(configYaml ...[]byte) *Logger {
 	cfg := struct {
 		Log Config `json:"log" yaml:"log"`
 	}{}
-	err := tools.ConfOfByte(defaultYamlConfig, &cfg)
-	if err != nil {
-		panic(err)
-	}
 
-	for _, data := range configYaml {
+	for _, data := range append(configYaml, defaultYamlConfig) {
 		if data == nil {
 			continue
 		}
 
-		err = tools.ConfOfByte(data, &cfg)
+		err := tools.ConfOfByte(data, &cfg)
 		if err != nil {
 			panic(err)
 		}
