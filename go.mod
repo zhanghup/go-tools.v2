@@ -10,7 +10,6 @@ require (
 	github.com/satori/go.uuid v1.2.0
 	github.com/tealeg/xlsx v1.0.5
 	github.com/tidwall/buntdb v1.2.9
-	github.com/zhanghup/go-tools v1.4.8
 	go.uber.org/zap v1.21.0
 	golang.org/x/text v0.3.7
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0

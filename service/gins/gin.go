@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/zhanghup/go-tools.v2"
-	"github.com/zhanghup/go-tools/tog"
+	"github.com/zhanghup/go-tools.v2/service/tog"
 	"strings"
 	"time"
 )
