@@ -45,7 +45,7 @@ func InitEngine(cfg ...[]byte) IEngine {
 		Influxdb Option `json:"influxdb"`
 	}{}
 
-	for _, s := range append(cfg, initConfigByte) {
+	for _, s := range tools.Reverse(append(cfg, initConfigByte)) {
 		err := tools.ConfOfByte(s, &opt)
 		if err != nil {
 			panic(err)

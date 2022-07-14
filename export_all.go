@@ -172,3 +172,10 @@ func Wait(n int, fn func(nn int)) {
 
 	g.Wait()
 }
+
+func Reverse[T any](ls []T) []T {
+	for i, j := 0, len(ls)-1; i < j; i, j = i+1, j-1 {
+		ls[i], ls[j] = ls[j], ls[i]
+	}
+	return ls
+}

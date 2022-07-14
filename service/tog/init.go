@@ -42,7 +42,7 @@ func NewLogger(configYaml ...[]byte) *Logger {
 		Log Config `json:"log" yaml:"log"`
 	}{}
 
-	for _, data := range append(configYaml, defaultYamlConfig) {
+	for _, data := range tools.Reverse(append(configYaml, defaultYamlConfig)) {
 		if data == nil {
 			continue
 		}
