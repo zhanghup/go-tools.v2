@@ -2,6 +2,7 @@ package dm
 
 import (
 	"context"
+	"github.com/zhanghup/go-tools.v2"
 	"xorm.io/xorm"
 )
 
@@ -10,10 +11,12 @@ type ISession[T any] interface {
 	Context() context.Context
 	Close() error
 
+	Table(obj interface{}) ISession[T]
 	SF(sqlstr string, querys ...any) ISession[T]
 	Order(order ...string) ISession[T]
 
 	Find() ([]T, error)
+	FindBean(rowsSlicePtr interface{}) error
 	Get() (T, bool, error)
 	Exists() (v bool, err error)
 	Count() (total int64, err error)
@@ -37,6 +40,12 @@ type session[T any] struct {
 	engine sessionEngine
 
 	sfs *sessionSF[T]
+}
+
+func (s *session[T]) Table(obj interface{}) ISession[T] {
+	tab := tools.RftTypeInfo(obj)
+	s.sfs.tableName = s.engine.db.GetTableMapper().Obj2Table(tab.Name)
+	return s
 }
 
 func (s *session[T]) Context() context.Context {

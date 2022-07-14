@@ -1,11 +1,38 @@
 package dm
 
+func (this *session[T]) FindBean(rowsSlicePtr interface{}) error {
+	this.Table(rowsSlicePtr)
+	
+	return this._autoClose(func() error {
+		return this.engine.sess.SQL(this.sfs.SQL(false, true), this.sfs.sqlArgs...).Find(rowsSlicePtr)
+	})
+}
+
 func (this *session[T]) Find() ([]T, error) {
 	vs := make([]T, 0)
 	err := this._autoClose(func() error {
 		return this.engine.sess.SQL(this.sfs.SQL(false, true), this.sfs.sqlArgs...).Find(&vs)
 	})
 	return vs, err
+}
+
+func (this *session[T]) GetBean(bean interface{}) (bool, error) {
+	this.Table(bean)
+
+	ok := false
+	var err error
+	err = this._autoClose(func() error {
+		this.sfs.Limit(1)
+		ok, err = this.engine.sess.SQL(this.sfs.SQL(true, true), this.sfs.sqlArgs...).Get(bean)
+		return err
+	})
+	if err != nil {
+		return false, err
+	}
+	if !ok {
+		return false, err
+	}
+	return true, nil
 }
 
 func (this *session[T]) Get() (T, bool, error) {
