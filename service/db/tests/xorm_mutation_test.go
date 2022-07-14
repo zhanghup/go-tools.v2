@@ -27,7 +27,7 @@ func TestInsert(t *testing.T) {
 }
 
 func TestUpdate(t *testing.T) {
-	err := db.SF[User]("username = ?", "zander").Update(map[string]any{
+	err := db.SF("username = ?", "zander").Table(User{}).Update(map[string]any{
 		"age": 1,
 	})
 	if err != nil {

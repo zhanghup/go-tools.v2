@@ -2,7 +2,6 @@ package tests
 
 import (
 	"context"
-	"fmt"
 	"github.com/zhanghup/go-tools.v2/service/db"
 	"testing"
 )
@@ -12,9 +11,8 @@ func TestWith(t *testing.T) {
 		return "select 1"
 	})
 
-	users, _, err := db.SF[int](`select * from {{ withs "age" }}`).Get()
+	_, _, err := db.SF(`select * from {{ withs "age" }}`).Get()
 	if err != nil {
 		t.Fatal(err)
 	}
-	fmt.Println(users)
 }

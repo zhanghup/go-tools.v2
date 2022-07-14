@@ -10,20 +10,18 @@ import (
 
 func TestLoaderInfo(t *testing.T) {
 	tools.Wait(10, func(nn int) {
-		res, err := db.Info[User](context.Background(), fmt.Sprintf("%d", nn), "user", "username")
+		_, err := db.Info[User](context.Background(), fmt.Sprintf("%d", nn), "user", "username")
 		if err != nil {
-			panic(err)
+			t.Fatal(err)
 		}
-		fmt.Println(res)
 	})
 }
 
 func TestLoaderSlice(t *testing.T) {
 	tools.Wait(10, func(nn int) {
-		res, err := db.Slice[User](context.Background(), fmt.Sprintf("%d", nn), "user", "username")
+		_, err := db.Slice[User](context.Background(), fmt.Sprintf("%d", nn), "user", "username")
 		if err != nil {
-			panic(err)
+			t.Fatal(err)
 		}
-		fmt.Println(res)
 	})
 }
