@@ -7,6 +7,10 @@ import (
 )
 
 func hasSession(ctx context.Context) (sessionEngine, bool) {
+	if ctx == nil {
+		return sessionEngine{}, false
+	}
+
 	v := ctx.Value(CONTEXT_SESSION)
 	if v != nil {
 		sessOld, ok := v.(sessionEngine)
@@ -60,7 +64,7 @@ func Get[T any](ctx context.Context, db *xorm.Engine, sqlOrArgs ...any) (T, bool
 		case string:
 			return s.SF(sqlOrArgs[0].(string), sqlOrArgs[1:]...).Get()
 		default:
-			return nil, false, errors.New("sqlOrArgs异常")
+			return *new(T), false, errors.New("sqlOrArgs异常")
 		}
 	}
 

@@ -10,6 +10,14 @@ import (
 	"xorm.io/xorm"
 )
 
+var (
+	regexpRemoveSqlContent = regexp.MustCompile(`\(.*\)`)
+	regexpFindOrderBy      = regexp.MustCompile(`order\s+by\s+`)
+	regexpFindOrderByAsc   = regexp.MustCompile(`[a-zA-Z0-9_]+`)
+	regexpFindOrderByDesc  = regexp.MustCompile(`^-[a-zA-Z0-9_]+`)
+	regexpFindLimit        = regexp.MustCompile(`limit`)
+)
+
 type sessionSF[T any] struct {
 	context context.Context
 
@@ -141,18 +149,18 @@ func (s *sessionSF[T]) SQL(orderFlag, selectArg bool, columns ...string) string 
 	}
 
 	if orderFlag && len(s.orderby) > 0 {
-		res := regexp.MustCompile(`\(.*\)`).ReplaceAllString(sqlstr, "")
-		match := regexp.MustCompile(`order\s+by\s+`).MatchString(res)
+		res := regexpRemoveSqlContent.ReplaceAllString(sqlstr, "")
+		match := regexpFindOrderBy.MatchString(res)
 
 		orderBy := make([]string, 0)
-		for _, s := range s.orderby {
-			if regexp.MustCompile(`^-[a-zA-Z0-9_]+`).MatchString(s) {
-				ss := strings.Replace(s, "-", "", 1)
+		for _, sss := range s.orderby {
+			if regexpFindOrderByDesc.MatchString(sss) {
+				ss := strings.Replace(sss, "-", "", 1)
 				orderBy = append(orderBy, ss+" desc")
-			} else if regexp.MustCompile(`[a-zA-Z0-9_]+`).MatchString(s) {
-				orderBy = append(orderBy, s+" asc")
+			} else if regexpFindOrderByAsc.MatchString(sss) {
+				orderBy = append(orderBy, sss+" asc")
 			} else {
-				orderBy = append(orderBy, s+" ")
+				orderBy = append(orderBy, sss+" ")
 			}
 		}
 		if match {
@@ -163,10 +171,13 @@ func (s *sessionSF[T]) SQL(orderFlag, selectArg bool, columns ...string) string 
 	}
 
 	if s.limit != nil {
-		if s.skip != nil {
-			sqlstr = fmt.Sprintf("%s limit %d,%d", sqlstr, *s.skip, *s.limit)
-		} else {
-			sqlstr = fmt.Sprintf("%s limit %d", sqlstr, *s.limit)
+		res := regexpRemoveSqlContent.ReplaceAllString(sqlstr, "")
+		if strings.Index(res, "limit") == -1 {
+			if s.skip != nil {
+				sqlstr = fmt.Sprintf("%s limit %d,%d", sqlstr, *s.skip, *s.limit)
+			} else {
+				sqlstr = fmt.Sprintf("%s limit %d", sqlstr, *s.limit)
+			}
 		}
 	}
 
