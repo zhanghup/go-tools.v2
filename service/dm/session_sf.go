@@ -259,29 +259,15 @@ func (s *sessionSF[T]) sf_args_item(sqlstring, kk string, value reflect.Value) (
 					args = append(args, v.Interface())
 				}
 
-				sqlstring = strings.Replace(sqlstring, kk, fmt.Sprintf("(%s)", strings.Join(ps, ",")), 1)
+				sqlstring = strings.Replace(sqlstring, kk, fmt.Sprintf("in (%s)", strings.Join(ps, ",")), 1)
 				results = append(results, args...)
 			} else {
-				sqlstring = strings.Replace(sqlstring, kk, "(?)", 1)
+				sqlstring = strings.Replace(sqlstring, kk, "in (?)", 1)
 				results = append(results, nil)
 			}
 		default:
-			if value.Type().Kind() == reflect.Array || value.Type().Kind() == reflect.Slice {
-				ps := []string{}
-				args := []any{}
-				for i := 0; i < value.Len(); i++ {
-					v := value.Index(i)
-					ps = append(ps, "?")
-					args = append(args, v.Interface())
-				}
-
-				sqlstring = strings.Replace(sqlstring, kk, fmt.Sprintf("(%s)", strings.Join(ps, ",")), 1)
-				results = append(results, args...)
-			} else {
-				sqlstring = strings.Replace(sqlstring, kk, "?", 1)
-				results = append(results, value.Interface())
-			}
-
+			sqlstring = strings.Replace(sqlstring, kk, "?", 1)
+			results = append(results, value.Interface())
 		}
 	}
 
