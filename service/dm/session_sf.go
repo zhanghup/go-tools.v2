@@ -68,6 +68,12 @@ func (s *sessionSF[T]) SF(sqlstr string, querys ...any) {
 		querys = []interface{}{"b"}
 		bean = models.User
 
+	查询方式定义：
+		1. select * from user where age = ?       param: 20
+		2. select * from user where age between:? param: []string{20,25} 	>>> select * from user where age between 20 and 25
+		3. select * from user where age in:?      param: []string{1,2,3} 	>>>  select * from user where age in (1,2,3)
+		4. select * from user where name like:?   param: 'zander'  			>>>  select * from user where name like concat('%',?,'%')
+
 	>>> select user.* from user where a = ?
 
 	@orderFlag: 是否加入排序内容，一般只有在查询的时候需要排序
