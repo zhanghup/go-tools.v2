@@ -22,7 +22,7 @@ type ISession[T any] interface {
 	Count() (total int64, err error)
 	Page(index, size int, count bool) (vs []T, v int, err error)
 
-	Insert(bean ...any) error
+	Insert(bean ...T) error
 	Update(bean any) error
 	Delete() error
 	Exec() error

@@ -46,9 +46,8 @@ func sliceLoader[Result any](db *xorm.Engine, ctx context.Context, beanNameOrSql
 	key = tools.MD5([]byte(key))
 
 	return loader.Load[[]Result](key, func(keys []string) (map[string][]Result, error) {
-
 		var sess ISession[LoaderResultItem[Result]]
-		if ctx.Value(CONTEXT_SESSION) == nil {
+		if ctx == nil || ctx.Value(CONTEXT_SESSION) == nil {
 			sess = Session[LoaderResultItem[Result]](db)
 		} else {
 			sess = Context[LoaderResultItem[Result]](db, ctx)
@@ -97,7 +96,7 @@ func infoLoader[Result any](db *xorm.Engine, ctx context.Context, beanNameOrSql 
 	return loader.Load[Result](key, func(keys []string) (map[string]Result, error) {
 
 		var sess ISession[LoaderResultItem[Result]]
-		if ctx.Value(CONTEXT_SESSION) == nil {
+		if ctx == nil || ctx.Value(CONTEXT_SESSION) == nil {
 			sess = Session[LoaderResultItem[Result]](db)
 		} else {
 			sess = Context[LoaderResultItem[Result]](db, ctx)

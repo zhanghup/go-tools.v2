@@ -25,3 +25,21 @@ func TestLoaderSlice(t *testing.T) {
 		}
 	})
 }
+
+func TestLoaderInfoNil(t *testing.T) {
+	tools.Wait(10, func(nn int) {
+		_, err := db.Info[User](nil, fmt.Sprintf("%d", nn), "user", "username")
+		if err != nil {
+			t.Fatal(err)
+		}
+	})
+}
+
+func TestLoaderSliceNil(t *testing.T) {
+	tools.Wait(10, func(nn int) {
+		_, err := db.Slice[User](nil, fmt.Sprintf("%d", nn), "user", "username")
+		if err != nil {
+			t.Fatal(err)
+		}
+	})
+}
