@@ -2,6 +2,7 @@ package tests
 
 import (
 	"context"
+	"fmt"
 	"github.com/zhanghup/go-tools.v2/service/db"
 	"testing"
 )
@@ -126,4 +127,16 @@ func TestExists(t *testing.T) {
 	if !ok {
 		t.Fatal("查询异常[3]")
 	}
+}
+
+func TestLike(t *testing.T) {
+
+}
+
+func TestBetween(t *testing.T) {
+	users, err := db.Find[User](nil, "age between:? and name like:?", []int{3, 5}, "zander")
+	if err != nil {
+		t.Fatal(err)
+	}
+	fmt.Println(users)
 }

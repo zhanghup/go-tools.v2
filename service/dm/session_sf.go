@@ -16,6 +16,8 @@ var (
 	regexpFindOrderByAsc   = regexp.MustCompile(`[a-zA-Z0-9_]+`)
 	regexpFindOrderByDesc  = regexp.MustCompile(`^-[a-zA-Z0-9_]+`)
 	regexpFindLimit        = regexp.MustCompile(`limit`)
+	regexpFindSqlQuery     = regexp.MustCompile(`[0-9a-zA-Z_]*\:?`)
+	regexpFindSqlParam     = regexp.MustCompile(`[0-9a-zA-Z_]*\:[0-9a-zA-Z_]+`)
 )
 
 type sessionSF[T any] struct {
@@ -73,6 +75,7 @@ func (s *sessionSF[T]) SF(sqlstr string, querys ...any) {
 */
 func (s *sessionSF[T]) SQL(orderFlag, selectArg bool, columns ...string) string {
 	sqlstr := strings.TrimSpace(s.querySql)
+	sqlstr = strings.ReplaceAll(sqlstr, ":?", "?")
 
 	// sql模板参数格式化
 	query := map[string]any{}
@@ -197,14 +200,14 @@ func (s *sessionSF[T]) Skip(n int) *sessionSF[T] {
 
 func (s *sessionSF[T]) args(sqlstring string) string {
 
-	r := regexp.MustCompile(`\:[0-9a-zA-Z_]+`)
+	r := regexp.MustCompile(`[0-9a-zA-Z_]*\:[0-9a-zA-Z_\?]+`)
 	ss := r.FindAllString(sqlstring, -1)
 
 	result := make([]any, 0)
 
 	for _, item := range ss {
-		key := item[1:]
-		value, ok := s.sqlParam[key]
+
+		value, ok := s.sqlParam[strings.Split(item, ":")[1]]
 		if !ok {
 			continue
 		}
@@ -217,33 +220,70 @@ func (s *sessionSF[T]) args(sqlstring string) string {
 	return sqlstring
 }
 
-func (s *sessionSF[T]) sf_args_item(sqlstring, key string, value reflect.Value) (string, []any) {
+func (s *sessionSF[T]) sf_args_item(sqlstring, kk string, value reflect.Value) (string, []any) {
 	results := make([]any, 0)
 
-	ty := value.Type()
-	switch ty.Kind() {
-	case reflect.Ptr:
-		if value.Pointer() == 0 {
-			sqlstring = strings.Replace(sqlstring, key, "?", 1)
-			results = append(results, nil)
-		} else {
-			return s.sf_args_item(sqlstring, key, value.Elem())
-		}
-	case reflect.Array, reflect.Slice:
-		ps := []string{}
-		args := []any{}
-		for i := 0; i < value.Len(); i++ {
-			v := value.Index(i)
-			ps = append(ps, "?")
-			args = append(args, v.Interface())
-		}
-
-		sqlstring = strings.Replace(sqlstring, key, fmt.Sprintf("(%s)", strings.Join(ps, ",")), 1)
-		results = append(results, args...)
-
-	default:
-		sqlstring = strings.Replace(sqlstring, key, "?", 1)
+	if value.Kind() == reflect.Ptr && value.Pointer() != 0 {
+		return s.sf_args_item(sqlstring, kk, value.Elem())
+	} else if value.Kind() == reflect.Ptr && value.Pointer() == 0 {
+		sqlstring = strings.Replace(sqlstring, kk, "?", 1)
 		results = append(results, value.Interface())
+	} else {
+		switch {
+		case strings.HasPrefix(kk, "like:"):
+			sqlstring = strings.Replace(sqlstring, kk, "like concat('%',?,'%')", 1)
+			results = append(results, value.Interface())
+		case strings.HasPrefix(kk, "between:"):
+			sqlstring = strings.Replace(sqlstring, kk, "between ? and ?", 1)
+			if value.Type().Kind() == reflect.Array || value.Type().Kind() == reflect.Slice {
+				if value.Len() > 0 {
+					results = append(results, value.Index(0).Interface())
+					if value.Len() > 1 {
+						results = append(results, value.Index(1).Interface())
+					} else {
+						results = append(results, nil)
+					}
+				} else {
+					results = append(results, nil, nil)
+				}
+			} else {
+				results = append(results, nil, nil)
+			}
+		case strings.HasPrefix(kk, "in:"):
+			if value.Type().Kind() == reflect.Array || value.Type().Kind() == reflect.Slice {
+				ps := []string{}
+				args := []any{}
+				for i := 0; i < value.Len(); i++ {
+					v := value.Index(i)
+					ps = append(ps, "?")
+					args = append(args, v.Interface())
+				}
+
+				sqlstring = strings.Replace(sqlstring, kk, fmt.Sprintf("(%s)", strings.Join(ps, ",")), 1)
+				results = append(results, args...)
+			} else {
+				sqlstring = strings.Replace(sqlstring, kk, "(?)", 1)
+				results = append(results, nil)
+			}
+		default:
+			if value.Type().Kind() == reflect.Array || value.Type().Kind() == reflect.Slice {
+				ps := []string{}
+				args := []any{}
+				for i := 0; i < value.Len(); i++ {
+					v := value.Index(i)
+					ps = append(ps, "?")
+					args = append(args, v.Interface())
+				}
+
+				sqlstring = strings.Replace(sqlstring, kk, fmt.Sprintf("(%s)", strings.Join(ps, ",")), 1)
+				results = append(results, args...)
+			} else {
+				sqlstring = strings.Replace(sqlstring, kk, "?", 1)
+				results = append(results, value.Interface())
+			}
+
+		}
 	}
+
 	return sqlstring, results
 }
