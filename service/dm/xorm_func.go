@@ -84,3 +84,17 @@ func Exists[T any](ctx context.Context, db *xorm.Engine, sqlOrArgs ...any) (bool
 
 	return s.Exists()
 }
+
+func Exec[T any](ctx context.Context, db *xorm.Engine, sqlOrArgs ...any) error {
+	s := inSession[T](ctx, db)
+	if len(sqlOrArgs) > 0 {
+		switch sqlOrArgs[0].(type) {
+		case string:
+			return s.SF(sqlOrArgs[0].(string), sqlOrArgs[1:]...).Exec()
+		default:
+			return errors.New("sqlOrArgs异常")
+		}
+	}
+
+	return s.Exec()
+}

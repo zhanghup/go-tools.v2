@@ -24,7 +24,7 @@ func (s *session[T]) Delete() error {
 
 func (s *session[T]) Exec() error {
 	return s._autoClose(func() error {
-		_, err := s.engine.sess.Exec(append([]any{s.sfs.SQL(false, false)}, s.sfs.sqlArgs...))
+		_, err := s.engine.sess.Exec(append([]any{s.sfs.SQL(false, false)}, s.sfs.sqlArgs...)...)
 		return err
 	})
 }
