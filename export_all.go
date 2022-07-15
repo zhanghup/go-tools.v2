@@ -179,3 +179,11 @@ func Reverse[T any](ls []T) []T {
 	}
 	return ls
 }
+
+func AnyToAny[T any](v ...T) []any {
+	r := make([]any, 0)
+	for _, vv := range v {
+		r = append(r, vv)
+	}
+	return r
+}

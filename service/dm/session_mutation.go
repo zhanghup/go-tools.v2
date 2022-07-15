@@ -1,8 +1,10 @@
 package dm
 
-func (s *session[T]) Insert(bean ...any) error {
+import "github.com/zhanghup/go-tools.v2"
+
+func (s *session[T]) Insert(bean ...T) error {
 	return s._autoClose(func() error {
-		_, err := s.engine.sess.Table(s.sfs.tableName).Insert(bean...)
+		_, err := s.engine.sess.Table(s.sfs.tableName).Insert(tools.AnyToAny(bean...)...)
 		return err
 	})
 }
