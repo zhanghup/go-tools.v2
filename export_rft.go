@@ -15,6 +15,10 @@ func (this myrft) RealValue(o any) any {
 }
 func (this myrft) realValue(o reflect.Value) reflect.Value {
 	if o.Kind() == reflect.Ptr {
+		if o.Pointer() == 0 {
+			return reflect.New(nil)
+		}
+
 		o = o.Elem()
 		return this.realValue(o)
 	}
