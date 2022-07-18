@@ -79,10 +79,6 @@ func Slice[Result any](db *xorm.Engine, ctx context.Context, beanKey, beanNameOr
 	return res, nil
 }
 
-func SliceId[Result any](db *xorm.Engine, ctx context.Context, beanKey, beanNameOrSql string, param ...any) ([]Result, error) {
-	return Slice[Result](db, ctx, beanKey, beanNameOrSql, "id", param...)
-}
-
 // Info 查找数据库对象,ctx可以为nil
 func infoLoader[Result any](db *xorm.Engine, ctx context.Context, beanNameOrSql string, field string, param ...any) loader.IObject[Result] {
 	info := tools.RftTypeInfo(make([]Result, 0))
@@ -126,8 +122,4 @@ func Info[Result any](db *xorm.Engine, ctx context.Context, beanKey, beanNameOrS
 		return nil, err
 	}
 	return &res, nil
-}
-
-func InfoId[Result any](db *xorm.Engine, ctx context.Context, beanKey, beanNameOrSql string, param ...any) (*Result, error) {
-	return Info[Result](db, ctx, beanKey, beanNameOrSql, "id", param...)
 }
