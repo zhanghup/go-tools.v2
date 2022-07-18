@@ -13,21 +13,47 @@ import (
 	"sync"
 )
 
+var strfmtregex = regexp.MustCompile(`{{.*?}}`)
+var fmtHanRegex = regexp.MustCompile("<<\\s*([\u4e00-\u9fa50-9a-zA-Z_]+)\\s*>>")
+
 /*
 	字符串格式化
+	1. 允许 tools.Fmt(`hello << 世界 >>`,map[string]any{"世界":"world"}) => "hello world"
+	2. 允许 tools.Fmt(`hello %s`,"world") => "hello world"
+	3. 允许 tools.Fmt(`hello {{.name}}`,map[string]any{"name":"world"}) => "hello world"
 */
-var strfmtregex = regexp.MustCompile(`{{.*?}}`)
-
 func Fmt(format string, args ...any) string {
-	if strfmtregex.MatchString(format) && len(args) > 0 && reflect.TypeOf(args[0]).Kind() == reflect.Map {
-		return TextTemplate(format, args...).String()
+	// 情况1先处理
+	format = fmtHanRegex.ReplaceAllString(format, "{{ .$1 }}")
+
+	pps := make([]any, 0)
+	ppm := map[string]any{}
+
+	for _, o := range args {
+		vl := Rft.realValue(reflect.ValueOf(o))
+
+		if vl.Kind() == reflect.Map {
+			for _, oo := range vl.MapKeys() {
+				if oo.Kind() == reflect.String {
+					ppm[oo.String()] = vl.MapIndex(oo).Interface()
+				}
+			}
+		} else {
+			pps = append(pps, o)
+		}
 	}
 
-	params := make([]any, 0)
-	for _, p := range args {
-		params = append(params, Rft.RealValue(p))
+	// 情况2再处理
+	if len(pps) > 0 {
+		format = fmt.Sprintf(format, pps...)
 	}
-	return fmt.Sprintf(format, params...)
+
+	// 情况3处理
+	if len(ppm) > 0 {
+		format = TextTemplate(format, ppm).String()
+	}
+
+	return format
 }
 
 // JSONString 以json格式输出struct对象,format判断时间将json格式化
