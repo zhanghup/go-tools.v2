@@ -23,7 +23,7 @@ func sqlFormat(sqlstr, field string) string {
 
 	if strings.Index(sqlstr, "select") == -1 && loaderSqlFormatRegexp.MatchString(sqlstr) {
 		sqlstr = tools.TextTemplate(`
-			select {{ .table }}.*,{{ .table }}.{{ .field }} _B51e761c0 from {{ .table }} where {{ .table }}.{{ .field }} in :keys
+			select {{ .table }}.*,{{ .table }}.{{ .field }} _B51e761c0 from {{ .table }} where {{ .table }}.{{ .field }} in:keys
 		`, map[string]any{
 			"table": sqlstr,
 			"field": field,
