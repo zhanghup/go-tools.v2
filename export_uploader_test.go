@@ -25,7 +25,7 @@ func TestFileUploadIO(t *testing.T) {
 }
 
 func TestFileGet(t *testing.T) {
-	id := "png202205-9c2b52e8-02fe-40bd-beab-78568658535a"
+	id := "722d7648047-00257f-2242ef-22b92e-007d2d8c1c743da.png"
 	fmt.Println(FileInfo(id))
 }
 
