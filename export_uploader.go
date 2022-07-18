@@ -7,13 +7,11 @@ import (
 	"os"
 	"strings"
 	"time"
-	"xorm.io/xorm"
 )
 
-var __fileEngine *xorm.Engine
 var ErrFileNotExist = errors.New("[uploader] 读取文件不存在")
 
-func FileInfo(id string) (io.Reader, error) {
+func FileInfo(id string) (io.Reader, os.FileInfo, error) {
 	uuids := strings.Split(id, "-")
 	date := uuids[0][0:1]
 	date = uuids[4][0:1] + date
@@ -27,16 +25,21 @@ func FileInfo(id string) (io.Reader, error) {
 	if n := strings.LastIndex(id, "."); n > -1 {
 		ftype = strings.Replace(id[n:], ".", "", -1)
 	} else {
-		return nil, ErrFileNotExist
+		return nil, nil, ErrFileNotExist
 	}
 	path := fmt.Sprintf("./upload/%s/%s/%s/%s", date[:4], date[4:], ftype, id)
 
 	file, err := os.Open(path)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
-	return file, nil
+	stat, err := file.Stat()
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return file, stat, nil
 }
 
 /*
