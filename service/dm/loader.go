@@ -39,20 +39,23 @@ func sliceLoader[Result any](db *xorm.Engine, ctx context.Context, beanNameOrSql
 
 	info := tools.RftTypeInfo(make([]Result, 0))
 
-	key := fmt.Sprintf(" sql: %s, param: %s, bean.pkg: %s,bean.name: %s", beanNameOrSql, tools.JSONString(param), info.PkgPath, info.FullName)
+	sid := ""
+	var sess ISession[LoaderResultItem[Result]]
+	if ctx == nil || ctx.Value(CONTEXT_SESSION) == nil {
+		sess = Session[LoaderResultItem[Result]](db)
+		sid = "sid"
+	} else {
+		sess = Context[LoaderResultItem[Result]](db, ctx)
+		sid = sess.Id()
+	}
+
+	key := fmt.Sprintf("sid: %s, sql: %s, param: %s, bean.pkg: %s,bean.name: %s", sid, beanNameOrSql, tools.JSONString(param), info.PkgPath, info.FullName)
 	if info.Name == "" {
 		key += ",bean.json: " + tools.JSONString(reflect.New(info.Type).Interface())
 	}
 	key = tools.MD5([]byte(key))
 
 	return loader.Load[[]Result](key, func(keys []string) (map[string][]Result, error) {
-		var sess ISession[LoaderResultItem[Result]]
-		if ctx == nil || ctx.Value(CONTEXT_SESSION) == nil {
-			sess = Session[LoaderResultItem[Result]](db)
-		} else {
-			sess = Context[LoaderResultItem[Result]](db, ctx)
-		}
-
 		res, err := sess.SF(sqlFormat(beanNameOrSql, field), append([]any{map[string]any{"keys": keys}}, param...)...).Find()
 
 		result := map[string][]Result{}
@@ -83,21 +86,23 @@ func Slice[Result any](db *xorm.Engine, ctx context.Context, beanKey, beanNameOr
 func infoLoader[Result any](db *xorm.Engine, ctx context.Context, beanNameOrSql string, field string, param ...any) loader.IObject[Result] {
 	info := tools.RftTypeInfo(make([]Result, 0))
 
-	key := fmt.Sprintf(" sql: %s, param: %s, bean.pkg: %s,bean.name: %s", beanNameOrSql, tools.JSONString(param), info.PkgPath, info.FullName)
+	sid := ""
+	var sess ISession[LoaderResultItem[Result]]
+	if ctx == nil || ctx.Value(CONTEXT_SESSION) == nil {
+		sess = Session[LoaderResultItem[Result]](db)
+		sid = "sid"
+	} else {
+		sess = Context[LoaderResultItem[Result]](db, ctx)
+		sid = sess.Id()
+	}
+
+	key := fmt.Sprintf("sid: %s, sql: %s, param: %s, bean.pkg: %s,bean.name: %s", sid, beanNameOrSql, tools.JSONString(param), info.PkgPath, info.FullName)
 	if info.Name == "" {
 		key += ",bean.json: " + tools.JSONString(reflect.New(info.Type).Interface())
 	}
 	key = tools.MD5([]byte(key))
 
 	return loader.Load[Result](key, func(keys []string) (map[string]Result, error) {
-
-		var sess ISession[LoaderResultItem[Result]]
-		if ctx == nil || ctx.Value(CONTEXT_SESSION) == nil {
-			sess = Session[LoaderResultItem[Result]](db)
-		} else {
-			sess = Context[LoaderResultItem[Result]](db, ctx)
-		}
-
 		res, err := sess.SF(sqlFormat(beanNameOrSql, field), append([]any{map[string]any{"keys": keys}}, param...)...).Find()
 
 		result := map[string]Result{}
