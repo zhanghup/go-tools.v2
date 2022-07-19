@@ -20,7 +20,7 @@ func init() {
 	err := db.Init(db.Config{
 		Uri:    "./data.db",
 		Driver: "sqlite3",
-		Debug:  true,
+		Debug:  false,
 	})
 	if err != nil {
 		panic(err)

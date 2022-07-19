@@ -35,6 +35,14 @@ func (this *session[T]) GetBean(bean interface{}) (bool, error) {
 	return true, nil
 }
 
+func (this *session[T]) GetOne() (T, error) {
+	v, err := this.Get()
+	if err != nil {
+		return *new(T), nil
+	}
+	return *v, nil
+}
+
 func (this *session[T]) Get() (*T, error) {
 	vs := new(T)
 	ok := false
