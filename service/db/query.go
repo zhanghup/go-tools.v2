@@ -17,7 +17,7 @@ func Find[T any](ctx context.Context, sqlOrArgs ...any) ([]T, error) {
 	return dm.Find[T](ctx, engine, sqlOrArgs...)
 }
 
-func Get[T any](ctx context.Context, sqlOrArgs ...any) (T, bool, error) {
+func Get[T any](ctx context.Context, sqlOrArgs ...any) (*T, error) {
 	return dm.Get[T](ctx, engine, sqlOrArgs...)
 }
 
