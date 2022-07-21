@@ -209,7 +209,6 @@ func WaitRoutineN(n, dataLen int, fn func(routineN int, index int)) {
 	}
 
 	g.Wait()
-	fmt.Println("--------------------------------", qu.Len(), dataLen, n)
 }
 func Wait(n int, fn func(nn int)) {
 	g := sync.WaitGroup{}

@@ -24,24 +24,26 @@ func TestWaiteRoutine1(t *testing.T) {
 		tools.WaitRoutineN(1, 1000, func(routineN int, index int) {
 			v += index
 		})
-		//if v != 499500 {
-		//	fmt.Println(v)
-		//}
+		if v != 499500 {
+			fmt.Println(v)
+		}
 	}()
 }
 func TestWaiteRoutineN(t *testing.T) {
-	tools.Wait(100, func(nn int) {
+	tools.Wait(1000, func(nn int) {
 		func() {
 			v := 0
 			s := sync.Mutex{}
-			tools.WaitRoutineN(10, 1000, func(routineN int, index int) {
+			tools.WaitRoutineN(10000, 100000, func(routineN int, index int) {
 				s.Lock()
 				v += index
 				s.Unlock()
 			})
-			if v != 499500 {
+
+			if v != 4999950000 {
 				fmt.Println(v)
 			}
+
 		}()
 	})
 
