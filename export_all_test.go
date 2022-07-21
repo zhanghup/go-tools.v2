@@ -3,11 +3,48 @@ package tools_test
 import (
 	"fmt"
 	"github.com/zhanghup/go-tools.v2"
+	"sync"
 	"testing"
 )
 
 func TestReverse(t *testing.T) {
 	fmt.Println(tools.Reverse([]string{"1", "2", "3", "4"}))
+}
+
+func TestWaiteRoutineN2(t *testing.T) {
+	v := 0
+	for i := 0; i < 1000; i++ {
+		v += i
+	}
+	fmt.Println(v)
+}
+func TestWaiteRoutine1(t *testing.T) {
+	func() {
+		v := 0
+		tools.WaitRoutineN(1, 1000, func(routineN int, index int) {
+			v += index
+		})
+		//if v != 499500 {
+		//	fmt.Println(v)
+		//}
+	}()
+}
+func TestWaiteRoutineN(t *testing.T) {
+	tools.Wait(100, func(nn int) {
+		func() {
+			v := 0
+			s := sync.Mutex{}
+			tools.WaitRoutineN(10, 1000, func(routineN int, index int) {
+				s.Lock()
+				v += index
+				s.Unlock()
+			})
+			if v != 499500 {
+				fmt.Println(v)
+			}
+		}()
+	})
+
 }
 
 func TestFmt(t *testing.T) {

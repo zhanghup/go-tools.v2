@@ -185,6 +185,32 @@ func WaitPage(total, size int, fn func(page int)) {
 	Wait(cnt, fn)
 }
 
+//WaitRoutineN 同时开启多个Routine执行任务
+func WaitRoutineN(n, dataLen int, fn func(routineN int, index int)) {
+	g := sync.WaitGroup{}
+	g.Add(dataLen)
+	qu := Queue[int]{}
+	for i := 0; i < dataLen; i++ {
+		qu.Push(i)
+	}
+
+	for i := 0; i < n; i++ {
+		go func(routineN int) {
+			for {
+				if ls := qu.Pop(1); len(ls) > 0 {
+					fn(routineN, ls[0])
+					g.Done()
+				} else {
+					break
+				}
+
+			}
+		}(i)
+	}
+
+	g.Wait()
+	fmt.Println("--------------------------------", qu.Len(), dataLen, n)
+}
 func Wait(n int, fn func(nn int)) {
 	g := sync.WaitGroup{}
 
