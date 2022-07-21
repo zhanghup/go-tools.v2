@@ -1,6 +1,8 @@
 package tog
 
-import "io"
+import (
+	"io"
+)
 
 var WriterNil io.Writer
 
