@@ -11,7 +11,7 @@ import (
 )
 
 //go:embed config-default.yml
-var defaultYamlConfig []byte
+var defaultConfig []byte
 
 type Config struct {
 	Enable bool `json:"enable" yaml:"enable"`
@@ -37,12 +37,12 @@ const (
 	LevelError Level = "error"
 )
 
-func NewLogger(configYaml ...[]byte) *Logger {
+func NewLogger(ymlData ...[]byte) *Logger {
 	cfg := struct {
 		Log Config `json:"log" yaml:"log"`
 	}{}
 
-	for _, data := range tools.Reverse(append(configYaml, defaultYamlConfig)) {
+	for _, data := range append([][]byte{defaultConfig}, ymlData...) {
 		if data == nil {
 			continue
 		}
@@ -102,7 +102,7 @@ func NewLogger(configYaml ...[]byte) *Logger {
 		}, // 自定义时间格式
 		EncodeLevel: func(level zapcore.Level, encoder zapcore.PrimitiveArrayEncoder) {
 			encoder.AppendString("[" + level.String() + "]")
-		}, // 小写编码器
+		},                                          // 小写编码器
 		EncodeCaller:   zapcore.ShortCallerEncoder, // 全路径编码器
 		EncodeDuration: zapcore.SecondsDurationEncoder,
 		EncodeName:     zapcore.FullNameEncoder,

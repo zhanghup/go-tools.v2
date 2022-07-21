@@ -26,7 +26,7 @@ func InitGin(fn func(g *gin.Engine) error, ymlData ...[]byte) error {
 		Web Config `json:"web" yaml:"web"`
 	}{}
 
-	for _, data := range tools.Reverse(append(ymlData, defaultConfig)) {
+	for _, data := range append([][]byte{defaultConfig}, ymlData...) {
 		if data == nil {
 			continue
 		}

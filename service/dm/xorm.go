@@ -27,7 +27,7 @@ func InitXorm(ymlData ...[]byte) (*xorm.Engine, error) {
 		Db Config `json:"db" yaml:"db"`
 	}{}
 
-	for _, data := range tools.Reverse(append(ymlData, defaultConfig)) {
+	for _, data := range append([][]byte{defaultConfig}, ymlData...) {
 		if data == nil {
 			continue
 		}
