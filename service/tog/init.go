@@ -102,7 +102,7 @@ func NewLogger(ymlData ...[]byte) *Logger {
 		}, // 自定义时间格式
 		EncodeLevel: func(level zapcore.Level, encoder zapcore.PrimitiveArrayEncoder) {
 			encoder.AppendString("[" + level.String() + "]")
-		},                                          // 小写编码器
+		}, // 小写编码器
 		EncodeCaller:   zapcore.ShortCallerEncoder, // 全路径编码器
 		EncodeDuration: zapcore.SecondsDurationEncoder,
 		EncodeName:     zapcore.FullNameEncoder,
