@@ -42,7 +42,7 @@ func sliceLoader[Result any](db *xorm.Engine, ctx context.Context, beanNameOrSql
 	sid := ""
 	var sess ISession[LoaderResultItem[Result]]
 	if ctx == nil || ctx.Value(CONTEXT_SESSION) == nil {
-		sess = Session[LoaderResultItem[Result]](db)
+		sess = Session[LoaderResultItem[Result]](db, ctx)
 		sid = "sid"
 	} else {
 		sess = Context[LoaderResultItem[Result]](db, ctx)
@@ -89,7 +89,7 @@ func infoLoader[Result any](db *xorm.Engine, ctx context.Context, beanNameOrSql 
 	sid := ""
 	var sess ISession[LoaderResultItem[Result]]
 	if ctx == nil || ctx.Value(CONTEXT_SESSION) == nil {
-		sess = Session[LoaderResultItem[Result]](db)
+		sess = Session[LoaderResultItem[Result]](db, ctx)
 		sid = "sid"
 	} else {
 		sess = Context[LoaderResultItem[Result]](db, ctx)

@@ -29,7 +29,7 @@ func inSession[T any](ctx context.Context, db *xorm.Engine) ISession[T] {
 	if _, ok := hasSession(ctx); ok {
 		ss = Context[T](db, ctx)
 	} else {
-		ss = Session[T](db)
+		ss = Session[T](db, ctx)
 	}
 
 	return ss

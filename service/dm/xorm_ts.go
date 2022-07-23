@@ -6,7 +6,12 @@ import (
 	"xorm.io/xorm"
 )
 
-func Session[T any](db *xorm.Engine) ISession[T] {
+func Session[T any](db *xorm.Engine, ctx context.Context) ISession[T] {
+
+	c := context.Background()
+	if ctx != nil {
+		c = ctx
+	}
 
 	newSession := &session[T]{
 		engine: sessionEngine{
@@ -17,7 +22,7 @@ func Session[T any](db *xorm.Engine) ISession[T] {
 		},
 	}
 
-	newSession.engine.context = context.WithValue(context.Background(), CONTEXT_SESSION, newSession.engine)
+	newSession.engine.context = context.WithValue(c, CONTEXT_SESSION, newSession.engine)
 	newSession.sfs = newSessionSf[T](db, newSession.engine.context)
 	return newSession
 }

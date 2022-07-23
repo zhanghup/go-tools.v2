@@ -6,8 +6,8 @@ import (
 	"github.com/zhanghup/go-tools.v2/service/dm"
 )
 
-func Session[T any]() dm.ISession[T] {
-	return dm.Session[T](engine)
+func Session[T any](ctx context.Context) dm.ISession[T] {
+	return dm.Session[T](engine, ctx)
 }
 
 func Context[T any](ctx context.Context) dm.ISession[T] {
