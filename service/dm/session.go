@@ -17,7 +17,8 @@ type ISession[T any] interface {
 
 	Find() ([]T, error)
 	FindBean(rowsSlicePtr interface{}) error
-	Get() (T, bool, error)
+	Get() (*T, error)
+	GetOne() (T, error)
 	Exists() (v bool, err error)
 	Count() (total int64, err error)
 	Page(index, size int, count bool) (vs []T, v int, err error)

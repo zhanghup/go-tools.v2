@@ -13,7 +13,7 @@ import (
 )
 
 //go:embed config-default.yml
-var initConfigByte []byte
+var defaultConfig []byte
 
 type Option struct {
 	Bucket string `json:"bucket" yaml:"bucket"`
@@ -40,13 +40,13 @@ type IEngine interface {
 	WriteWithContext(ctx context.Context, point ...*write.Point) error
 }
 
-func InitEngine(cfg ...[]byte) IEngine {
+func InitEngine(ymlData ...[]byte) IEngine {
 	opt := struct {
 		Influxdb Option `json:"influxdb"`
 	}{}
 
-	for _, s := range tools.Reverse(append(cfg, initConfigByte)) {
-		err := tools.ConfOfByte(s, &opt)
+	for _, data := range append([][]byte{defaultConfig}, ymlData...) {
+		err := tools.ConfOfByte(data, &opt)
 		if err != nil {
 			panic(err)
 		}

@@ -11,7 +11,7 @@ import (
 )
 
 //go:embed config-default.yml
-var defaultYamlConfig []byte
+var defaultConfig []byte
 
 type Config struct {
 	Enable bool `json:"enable" yaml:"enable"`
@@ -37,12 +37,12 @@ const (
 	LevelError Level = "error"
 )
 
-func NewLogger(configYaml ...[]byte) *Logger {
+func NewLogger(ymlData ...[]byte) *Logger {
 	cfg := struct {
 		Log Config `json:"log" yaml:"log"`
 	}{}
 
-	for _, data := range tools.Reverse(append(configYaml, defaultYamlConfig)) {
+	for _, data := range append([][]byte{defaultConfig}, ymlData...) {
 		if data == nil {
 			continue
 		}

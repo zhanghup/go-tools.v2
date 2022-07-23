@@ -37,15 +37,14 @@ func SetWiths(db *xorm.Engine, name string, f func(ctx context.Context) string) 
 }
 
 func SetTemplates(db *xorm.Engine, name string, f any) {
-	key := "___templates_" + dbKey(db)
-	kv := fmt.Sprintf("___templates_%s", name)
+	key := dbKey(db)
 
 	v, ok := store.Get(key)
 	if !ok {
-		store.Set(key, map[string]any{kv: f})
+		store.Set(key, map[string]any{name: f})
 		return
 	}
-	v[kv] = f
+	v[name] = f
 	store.Set(key, v)
 }
 

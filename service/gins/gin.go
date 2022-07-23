@@ -14,9 +14,10 @@ import (
 var defaultConfig []byte
 
 type Config struct {
-	Mode    string `yaml:"mode"` // [debug,release,test]
-	Port    string `yaml:"port"`
-	Trusted string `yaml:"trusted"`
+	Mode     string `yaml:"mode"` // [debug,release,test]
+	Port     string `yaml:"port"`
+	Trusted  string `yaml:"trusted"`
+	PrintLog bool   `yaml:"print_log"`
 }
 
 func InitGin(fn func(g *gin.Engine) error, ymlData ...[]byte) error {
@@ -25,7 +26,7 @@ func InitGin(fn func(g *gin.Engine) error, ymlData ...[]byte) error {
 		Web Config `json:"web" yaml:"web"`
 	}{}
 
-	for _, data := range tools.Reverse(append(ymlData, defaultConfig)) {
+	for _, data := range append([][]byte{defaultConfig}, ymlData...) {
 		if data == nil {
 			continue
 		}
@@ -40,7 +41,12 @@ func InitGin(fn func(g *gin.Engine) error, ymlData ...[]byte) error {
 
 func NewGin(cfg Config, fn func(g *gin.Engine) error) error {
 	gin.SetMode(cfg.Mode)
-	gin.DefaultWriter = tog.Writer
+
+	if cfg.PrintLog {
+		gin.DefaultWriter = tog.Writer
+	} else {
+		gin.DefaultWriter = tog.WriterNil
+	}
 
 	trusted := []string{"0.0.0.0"}
 	if cfg.Trusted != "" {

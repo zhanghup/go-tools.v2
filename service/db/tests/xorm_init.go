@@ -20,7 +20,7 @@ func init() {
 	err := db.Init(db.Config{
 		Uri:    "./data.db",
 		Driver: "sqlite3",
-		Debug:  true,
+		Debug:  false,
 	})
 	if err != nil {
 		panic(err)
@@ -42,7 +42,7 @@ func init() {
 	}
 
 	for i := 0; i < 9; i++ {
-		err := db.Session[User]().Insert(User{
+		err := db.Session[User](nil).Insert(User{
 			Id:   tools.UUID(),
 			Name: "zander",
 			Age:  i,

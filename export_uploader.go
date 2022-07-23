@@ -5,39 +5,41 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"regexp"
 	"strings"
 	"time"
-	"xorm.io/xorm"
 )
 
-var __fileEngine *xorm.Engine
-var __fileRegex = regexp.MustCompile(`^\w+\d{6}-`)
 var ErrFileNotExist = errors.New("[uploader] 读取文件不存在")
 
-func FileInfo(id string) (io.Reader, error) {
-	id = strings.Split(id, ".")[0]
+func FileInfo(id string) (io.Reader, os.FileInfo, error) {
+	uuids := strings.Split(id, "-")
+	date := uuids[0][0:1]
+	date = uuids[4][0:1] + date
+	date = uuids[3][0:1] + date
+	date = uuids[2][0:1] + date
+	date = uuids[1][0:1] + date
+	date = uuids[0][1:2] + date
 
-	v := __fileRegex.FindAllString(id, 1)
-	if len(v) == 0 {
-		return nil, ErrFileNotExist
-	}
-	vv := v[0]
-	ym := vv[len(vv)-7 : len(vv)-1]
-	ftype := vv[:len(vv)-7]
-	path := ""
-	if ftype == "stream" {
-		path = fmt.Sprintf("./upload/%s/%s/%s", ym[:4], ym[4:], ftype)
+	ftype := ""
+	// 文件后缀解析
+	if n := strings.LastIndex(id, "."); n > -1 {
+		ftype = strings.Replace(id[n:], ".", "", -1)
 	} else {
-		path = fmt.Sprintf("./upload/%s/%s/%s/%s.%s", ym[:4], ym[4:], ftype, id, ftype)
+		return nil, nil, ErrFileNotExist
 	}
+	path := fmt.Sprintf("./upload/%s/%s/%s/%s", date[:4], date[4:], ftype, id)
 
 	file, err := os.Open(path)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
-	return file, nil
+	stat, err := file.Stat()
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return file, stat, nil
 }
 
 /*
@@ -51,8 +53,10 @@ func FileUploadIO(reader io.Reader, filename string) (string, error) {
 
 	ftype := ""
 	// 文件后缀解析
-	if len(strings.Split(filename, ".")) > 1 {
-		ftype = strings.Split(filename, ".")[1]
+	if n := strings.LastIndex(filename, "."); n > -1 {
+		ftype = strings.Replace(filename[n:], ".", "", -1)
+	} else {
+		ftype = "stream"
 	}
 
 	uuids := strings.Split(UUID(), "-")
@@ -67,12 +71,11 @@ func FileUploadIO(reader io.Reader, filename string) (string, error) {
 		idx := i % len(uuids)
 		uuids[idx] = string(s) + uuids[idx]
 	}
-	for i, s := range []rune(ftype) {
-		idx := i % len(uuids)
-		uuids[idx] = string(s) + uuids[idx]
-	}
 
 	id := strings.Join(uuids, "-")
+	if ftype != "" {
+		id += "." + ftype
+	}
 
 	// 资源文件路径定义
 	path := ""
@@ -89,12 +92,7 @@ func FileUploadIO(reader io.Reader, filename string) (string, error) {
 			}
 		}
 
-		if ftype != "" {
-			path = fmt.Sprintf("%s/%s.%s", dir, id, ftype)
-		} else {
-			ftype = "stream"
-			path = fmt.Sprintf("%s/%s", dir, id)
-		}
+		path = fmt.Sprintf("%s/%s", dir, id)
 	}
 
 	f, err := os.Create(path)

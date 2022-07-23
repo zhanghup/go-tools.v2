@@ -12,21 +12,21 @@ func TestWith(t *testing.T) {
 		return "select 1"
 	})
 
-	_, _, err := db.SF(nil, `select * from {{ withs "age" }}`).Get()
+	_, err := db.SF(nil, `select * from {{ withs "age" }}`).Get()
 	if err != nil {
 		t.Fatal(err)
 	}
 }
 
 func TestSF(t *testing.T) {
-	_, _, err := db.SF(nil, "select 1 from user limit 1").Get()
+	_, err := db.SF(nil, "select 1 from user limit 1").Get()
 	if err != nil {
 		t.Fatal(err)
 	}
 }
 
 func TestSFC(t *testing.T) {
-	v, _, err := db.SFC[int](nil, "select 1 from user limit 1").Get()
+	v, err := db.SFC[int](nil, "select 1 from user limit 1").GetOne()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -39,7 +39,7 @@ func TestSFC(t *testing.T) {
 		t.Fatal()
 	}
 
-	v2, _, err := db.SFC[User](nil, "id = ?", "123").Get()
+	v2, err := db.SFC[User](nil, "id = ?", "123").GetOne()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -75,30 +75,30 @@ func TestFind(t *testing.T) {
 }
 
 func TestGet(t *testing.T) {
-	user, ok, err := db.Get[User](nil)
+	user, err := db.Get[User](nil)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !ok {
+	if user == nil {
 		t.Fatal("查询异常")
 	}
 	if user.Id != "111" {
 		t.Fatal("查询异常[4]")
 	}
 
-	user, ok, err = db.Get[User](nil, "age = ?", 4)
+	user, err = db.Get[User](nil, "age = ?", 4)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !ok {
+	if user == nil {
 		t.Fatal("查询异常[2]")
 	}
 
-	user, ok, err = db.Get[User](nil, "age = ? limit 10", 4)
+	user, err = db.Get[User](nil, "age = ? limit 10", 4)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !ok {
+	if user == nil {
 		t.Fatal("查询异常[3]")
 	}
 }

@@ -2,7 +2,7 @@ package dm
 
 func (this *session[T]) FindBean(rowsSlicePtr interface{}) error {
 	this.Table(rowsSlicePtr)
-	
+
 	return this._autoClose(func() error {
 		return this.engine.sess.SQL(this.sfs.SQL(false, true), this.sfs.sqlArgs...).Find(rowsSlicePtr)
 	})
@@ -35,7 +35,15 @@ func (this *session[T]) GetBean(bean interface{}) (bool, error) {
 	return true, nil
 }
 
-func (this *session[T]) Get() (T, bool, error) {
+func (this *session[T]) GetOne() (T, error) {
+	v, err := this.Get()
+	if err != nil {
+		return *new(T), nil
+	}
+	return *v, nil
+}
+
+func (this *session[T]) Get() (*T, error) {
 	vs := new(T)
 	ok := false
 
@@ -46,12 +54,12 @@ func (this *session[T]) Get() (T, bool, error) {
 		return err
 	})
 	if err != nil {
-		return *vs, false, err
+		return nil, err
 	}
 	if !ok {
-		return *vs, false, err
+		return nil, err
 	}
-	return *vs, true, nil
+	return vs, nil
 }
 
 func (this *session[T]) Exists() (v bool, err error) {

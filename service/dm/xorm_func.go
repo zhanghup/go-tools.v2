@@ -29,7 +29,7 @@ func inSession[T any](ctx context.Context, db *xorm.Engine) ISession[T] {
 	if _, ok := hasSession(ctx); ok {
 		ss = Context[T](db, ctx)
 	} else {
-		ss = Session[T](db)
+		ss = Session[T](db, ctx)
 	}
 
 	return ss
@@ -57,14 +57,28 @@ func Find[T any](ctx context.Context, db *xorm.Engine, sqlOrArgs ...any) ([]T, e
 	return s.Find()
 }
 
-func Get[T any](ctx context.Context, db *xorm.Engine, sqlOrArgs ...any) (T, bool, error) {
+func GetOne[T any](ctx context.Context, db *xorm.Engine, sqlOrArgs ...any) (T, error) {
+	s := inSession[T](ctx, db)
+	if len(sqlOrArgs) > 0 {
+		switch sqlOrArgs[0].(type) {
+		case string:
+			return s.SF(sqlOrArgs[0].(string), sqlOrArgs[1:]...).GetOne()
+		default:
+			return *new(T), errors.New("sqlOrArgs异常")
+		}
+	}
+
+	return s.GetOne()
+}
+
+func Get[T any](ctx context.Context, db *xorm.Engine, sqlOrArgs ...any) (*T, error) {
 	s := inSession[T](ctx, db)
 	if len(sqlOrArgs) > 0 {
 		switch sqlOrArgs[0].(type) {
 		case string:
 			return s.SF(sqlOrArgs[0].(string), sqlOrArgs[1:]...).Get()
 		default:
-			return *new(T), false, errors.New("sqlOrArgs异常")
+			return nil, errors.New("sqlOrArgs异常")
 		}
 	}
 

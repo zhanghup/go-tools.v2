@@ -46,7 +46,7 @@ func newSessionSf[T any](db *xorm.Engine, ctx context.Context) *sessionSF[T] {
 	return &sessionSF[T]{
 		context:          ctx,
 		tableName:        db.GetTableMapper().Obj2Table(tab.Name),
-		templateFunction: tools.Merge(templateFunctions(db, "___with_"), templateFunctions(db, "___templates_"), templateFunctions(db, "___contexts_")),
+		templateFunction: tools.Merge(templateFunctions(db, "___with_"), templateFunctions(db, ""), templateFunctions(db, "___contexts_")),
 	}
 }
 
@@ -107,7 +107,7 @@ func (s *sessionSF[T]) SQL(orderFlag, selectArg bool, columns ...string) string 
 			return fmt.Sprintf("__sql_with_%s", name)
 		},
 		"ctx": func(name string) string {
-			return fmt.Sprintf("{{ ctx_%s .ctx }}", name)
+			return fmt.Sprintf("{{ ___contexts_%s .ctx }}", name)
 		},
 	}
 

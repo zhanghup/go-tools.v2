@@ -6,3 +6,5 @@ web:
   port: 8089
   # 受信任地址
   trusted: 0.0.0.0
+  # 打印路由信息
+  print_log: true
