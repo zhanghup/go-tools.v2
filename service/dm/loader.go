@@ -58,7 +58,7 @@ func sliceLoader[Result any](db *xorm.Engine, ctx context.Context, beanNameOrSql
 		result := map[string][]Result{}
 
 		if err != nil {
-			return result, nil
+			return result, err
 		}
 
 		for _, o := range res {
@@ -107,7 +107,7 @@ func infoLoader[Result any](db *xorm.Engine, ctx context.Context, beanNameOrSql 
 		result := map[string]Result{}
 
 		if err != nil {
-			return result, nil
+			return result, err
 		}
 
 		for _, o := range res {
