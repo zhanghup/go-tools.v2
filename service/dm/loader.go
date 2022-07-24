@@ -49,7 +49,8 @@ func sliceLoader[Result any](db *xorm.Engine, ctx context.Context, beanNameOrSql
 		sid = sess.Id()
 	}
 
-	key := fmt.Sprintf("sid: %s, sql: %s, param: %s, bean.pkg: %s,bean.name: %s", sid, beanNameOrSql, tools.JSONString(param), info.PkgPath, info.FullName)
+	sqlstr := sqlFormat(beanNameOrSql, field)
+	key := fmt.Sprintf("sid: %s, sql: %s, param: %s, bean.pkg: %s,bean.name: %s", sid, sqlstr, tools.JSONString(param), info.PkgPath, info.FullName)
 	if info.Name == "" {
 		key += ",bean.json: " + tools.JSONString(reflect.New(info.Type).Interface())
 	}
@@ -96,14 +97,15 @@ func infoLoader[Result any](db *xorm.Engine, ctx context.Context, beanNameOrSql 
 		sid = sess.Id()
 	}
 
-	key := fmt.Sprintf("sid: %s, sql: %s, param: %s, bean.pkg: %s,bean.name: %s", sid, beanNameOrSql, tools.JSONString(param), info.PkgPath, info.FullName)
+	sqlstr := sqlFormat(beanNameOrSql, field)
+	key := fmt.Sprintf("sid: %s, sql: %s, param: %s, bean.pkg: %s,bean.name: %s", sid, sqlstr, tools.JSONString(param), info.PkgPath, info.FullName)
 	if info.Name == "" {
 		key += ",bean.json: " + tools.JSONString(reflect.New(info.Type).Interface())
 	}
 	key = tools.MD5([]byte(key))
 
 	return loader.Load[Result](key, func(keys []string) (map[string]Result, error) {
-		res, err := sess.SF(sqlFormat(beanNameOrSql, field), append([]any{map[string]any{"keys": keys}}, param...)...).Find()
+		res, err := sess.SF(sqlstr, append([]any{map[string]any{"keys": keys}}, param...)...).Find()
 
 		result := map[string]Result{}
 
