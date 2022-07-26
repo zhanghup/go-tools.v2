@@ -8,6 +8,7 @@ import (
 	"crypto/md5"
 	"crypto/rand"
 	"crypto/rsa"
+	"crypto/sha1"
 	"crypto/sha256"
 	"crypto/x509"
 	"encoding/base64"
@@ -53,14 +54,24 @@ func SHA256WithRSA(signContent string, privateKey string) []byte {
 	return RsaSign(signContent, privateKey, crypto.SHA256)
 }
 
-func SHA256(data []byte) (string, error) {
+func SHA256(data []byte) string {
 	h := sha256.New()
 	if _, err := io.Copy(h, bytes.NewBuffer(data)); err != nil {
-		return "", err
+		return ""
 	}
 
 	checksum := fmt.Sprintf("%X", h.Sum(nil))
-	return checksum, nil
+	return checksum
+}
+
+func SHA1(data []byte) string {
+	h := sha1.New()
+	if _, err := io.Copy(h, bytes.NewBuffer(data)); err != nil {
+		return ""
+	}
+
+	checksum := fmt.Sprintf("%X", h.Sum(nil))
+	return checksum
 }
 
 func RsaSign(signContent string, privateKey string, hash crypto.Hash) []byte {

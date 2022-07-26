@@ -49,6 +49,10 @@ func TestWaiteRoutineN(t *testing.T) {
 
 }
 
+func TestSHA1(t *testing.T) {
+	fmt.Println(tools.SHA1([]byte("dfajfkasjfl")))
+}
+
 func TestFmt(t *testing.T) {
 	fmt.Println(tools.Fmt("<<n123>>", map[string]any{"n123": "你好"}))
 	fmt.Println(tools.Fmt("<<   n123   >>", map[string]any{"n123": "你好"}))
