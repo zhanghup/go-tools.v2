@@ -238,3 +238,24 @@ func AnyToAny[T any](v ...T) []any {
 	}
 	return r
 }
+
+func TimeCh(t int64) string {
+	result := ""
+	if t%60 > 0 {
+		result = fmt.Sprintf("%02d秒", t%60)
+		t = t / 60
+	}
+	if t%60 > 0 {
+		result = fmt.Sprintf("%02d分%s", t%60, result)
+		t = t / 60
+	}
+	if t%24 > 0 {
+		result = fmt.Sprintf("%02d小时%s", t%24, result)
+		t = t / 24
+	}
+	if t > 0 {
+		result = IntToStr(t) + "天" + result
+	}
+
+	return result
+}

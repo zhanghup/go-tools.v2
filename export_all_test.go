@@ -64,3 +64,15 @@ func TestFmt(t *testing.T) {
 	fmt.Println(tools.Fmt("的哈哈的发挥 <<n123>>  %s %d", map[string]any{"n123": "你好"}, "咳咳咳咳咳", 2222))
 	fmt.Println(tools.Fmt("的哈哈的发挥 <<n123>>  %s %d {{.kkk}}", map[string]any{"n123": "你好", "kkk": "觉得咖啡机"}, "咳咳咳咳咳", 2222))
 }
+
+func TestTimeCh(t *testing.T) {
+	fmt.Println(tools.TimeCh(1))
+	fmt.Println(tools.TimeCh(12))
+	fmt.Println(tools.TimeCh(123))
+	fmt.Println(tools.TimeCh(1234))
+	fmt.Println(tools.TimeCh(12345))
+	fmt.Println(tools.TimeCh(123456))
+	fmt.Println(tools.TimeCh(1234567))
+	fmt.Println(tools.TimeCh(12345678))
+	fmt.Println(tools.TimeCh(123456789))
+}
