@@ -11,7 +11,7 @@ func (this *session[T]) FindBean(rowsSlicePtr interface{}) error {
 func (this *session[T]) Find() ([]T, error) {
 	vs := make([]T, 0)
 	err := this._autoClose(func() error {
-		return this.engine.sess.SQL(this.sfs.SQL(false, true), this.sfs.sqlArgs...).Find(&vs)
+		return this.engine.sess.SQL(this.sfs.SQL(true, true), this.sfs.sqlArgs...).Find(&vs)
 	})
 	return vs, err
 }
