@@ -7,8 +7,8 @@ import (
 )
 
 // Slice2 查找数据库对象,ctx可以为nil
-func Slice2[Result any](ctx context.Context, beanKey, beanNameOrSql string, field string, order []string, param ...any) ([]Result, error) {
-	return dm.Slice[Result](engine, ctx, beanKey, beanNameOrSql, field, order, param...)
+func Slice2[Result any](ctx context.Context, beanKey, beanNameOrSql string, field string, param ...any) ([]Result, error) {
+	return dm.Slice[Result](engine, ctx, beanKey, beanNameOrSql, field, []string{}, param...)
 }
 
 /*
