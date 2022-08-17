@@ -19,7 +19,7 @@ func TestLoaderInfo(t *testing.T) {
 
 func TestLoaderSlice(t *testing.T) {
 	tools.Wait(10, func(nn int) {
-		_, err := db.Slice[User](context.Background(), fmt.Sprintf("%d", nn+10), "age|age = 1", []string{"-age"})
+		_, err := db.Slice[User](context.Background(), fmt.Sprintf("%d", nn+10), "age|age = ?", []string{"-age"}, 1)
 		if err != nil {
 			t.Fatal(err)
 		}
