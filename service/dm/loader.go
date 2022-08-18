@@ -22,11 +22,11 @@ func sqlFormat(sqlstr, field string) string {
 
 	sqlstr = regexp.MustCompile(`^prefix_\S+\s+`).ReplaceAllString(sqlstr, "")
 
-	otherQuery := "1 = 1 "
+	otherQuery := ""
 	ss := strings.Split(field, "|")
 	field = ss[0]
 	if len(ss) > 1 {
-		otherQuery = " and " + ss[1] + " "
+		otherQuery = " and " + ss[1]
 	}
 
 	if strings.Index(sqlstr, "select") == -1 && loaderSqlFormatRegexp.MatchString(sqlstr) {
@@ -38,6 +38,9 @@ func sqlFormat(sqlstr, field string) string {
 			"other": otherQuery,
 		}).String()
 	} else {
+		if otherQuery == "" {
+			otherQuery = "1 = 1"
+		}
 		sqlstr = fmt.Sprintf(`select s.*,s.%s _B51e761c0 from (%s) s where %s`, field, sqlstr, otherQuery)
 	}
 	return sqlstr
