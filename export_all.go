@@ -17,10 +17,10 @@ var strfmtregex = regexp.MustCompile(`{{.*?}}`)
 var fmtHanRegex = regexp.MustCompile("<<\\s*([\u4e00-\u9fa50-9a-zA-Z_]+)\\s*>>")
 
 /*
-	字符串格式化
-	1. 允许 tools.Fmt(`hello << 世界 >>`,map[string]any{"世界":"world"}) => "hello world"
-	2. 允许 tools.Fmt(`hello %s`,"world") => "hello world"
-	3. 允许 tools.Fmt(`hello {{.name}}`,map[string]any{"name":"world"}) => "hello world"
+字符串格式化
+1. 允许 tools.Fmt(`hello << 世界 >>`,map[string]any{"世界":"world"}) => "hello world"
+2. 允许 tools.Fmt(`hello %s`,"world") => "hello world"
+3. 允许 tools.Fmt(`hello {{.name}}`,map[string]any{"name":"world"}) => "hello world"
 */
 func Fmt(format string, args ...any) string {
 	// 情况1先处理
@@ -82,19 +82,20 @@ func JSONString(obj any, format ...bool) string {
 }
 
 /*
-	DataToBytes 将数据转换为[]byte
-	支持的类型：
-		bool/*bool/[]bool
-		int8/*int8/[]int8
-		uint8/*uint8/[]uint8
-		int16/*int16/[]int16
-		uint16/*uint16/[]uint16
-		int32/*int32/[]int32
-		uint32/*uint32/[]uint32
-		int64/*int64/[]int64
-		uint64/*uint64/[]uint64
-		float32/*float32/[]float32
-		float64/*float64/[]float64
+DataToBytes 将数据转换为[]byte
+支持的类型：
+
+	bool/*bool/[]bool
+	int8/*int8/[]int8
+	uint8/*uint8/[]uint8
+	int16/*int16/[]int16
+	uint16/*uint16/[]uint16
+	int32/*int32/[]int32
+	uint32/*uint32/[]uint32
+	int64/*int64/[]int64
+	uint64/*uint64/[]uint64
+	float32/*float32/[]float32
+	float64/*float64/[]float64
 */
 func DataToBytes[T any](n T) []byte {
 	bytesBuffer := bytes.NewBuffer([]byte{})
@@ -103,7 +104,7 @@ func DataToBytes[T any](n T) []byte {
 }
 
 /*
-	BytesToData 将数据转换为自定义类型
+BytesToData 将数据转换为自定义类型
 */
 func BytesToData[T any](b []byte) T {
 	bytesBuffer := bytes.NewBuffer(b)
@@ -185,7 +186,7 @@ func WaitPage(total, size int, fn func(page int)) {
 	Wait(cnt, fn)
 }
 
-//WaitRoutineN 同时开启多个Routine执行任务
+// WaitRoutineN 同时开启多个Routine执行任务
 func WaitRoutineN(n, dataLen int, fn func(routineN int, index int)) {
 	g := sync.WaitGroup{}
 	g.Add(dataLen)
@@ -264,4 +265,11 @@ func TimeCh(t int64) string {
 	}
 
 	return result
+}
+
+func If[T any](flag bool, trueValue T, falseValue T) T {
+	if flag {
+		return trueValue
+	}
+	return falseValue
 }
