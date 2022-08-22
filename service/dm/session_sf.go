@@ -56,28 +56,32 @@ func (s *sessionSF[T]) SF(sqlstr string, querys ...any) {
 }
 
 /*
+示例1：
 
-	示例1：
-		sql = "select * from user where a = ? and b = ?"
-		querys = []interface{}{"a","b"}
-	示例2：
-		sql = "select * from user where a = :a and b = ?"
-		querys = []interface{}{"b",map[string]interface{}{"a":"a"}}
-	示例3：
-		sql = "where a = ?"
-		querys = []interface{}{"b"}
-		bean = models.User
+	sql = "select * from user where a = ? and b = ?"
+	querys = []interface{}{"a","b"}
 
-	查询方式定义：
-		1. select * from user where age = ?       param: 20
-		2. select * from user where age between:? param: []string{20,25} 	>>> select * from user where age between 20 and 25
-		3. select * from user where age in:?      param: []string{1,2,3} 	>>>  select * from user where age in (1,2,3)
-		4. select * from user where name like:?   param: 'zander'  			>>>  select * from user where name like concat('%',?,'%')
+示例2：
 
-	>>> select user.* from user where a = ?
+	sql = "select * from user where a = :a and b = ?"
+	querys = []interface{}{"b",map[string]interface{}{"a":"a"}}
 
-	@orderFlag: 是否加入排序内容，一般只有在查询的时候需要排序
-	@selectArg: 是否需要拼接成完整的SQL
+示例3：
+
+	sql = "where a = ?"
+	querys = []interface{}{"b"}
+	bean = models.User
+
+查询方式定义：
+ 1. select * from user where age = ?       param: 20
+ 2. select * from user where age between:? param: []string{20,25} 	>>> select * from user where age between 20 and 25
+ 3. select * from user where age in:?      param: []string{1,2,3} 	>>>  select * from user where age in (1,2,3)
+ 4. select * from user where name like:?   param: 'zander'  			>>>  select * from user where name like concat('%',?,'%')
+
+>>> select user.* from user where a = ?
+
+@orderFlag: 是否加入排序内容，一般只有在查询的时候需要排序
+@selectArg: 是否需要拼接成完整的SQL
 */
 func (s *sessionSF[T]) SQL(orderFlag, selectArg bool, columns ...string) string {
 	sqlstr := strings.TrimSpace(s.querySql)
@@ -161,8 +165,15 @@ func (s *sessionSF[T]) SQL(orderFlag, selectArg bool, columns ...string) string 
 		res := regexpRemoveSqlContent.ReplaceAllString(sqlstr, "")
 		match := regexpFindOrderBy.MatchString(res)
 
+		orderMap := map[string]bool{}
+
 		orderBy := make([]string, 0)
 		for _, sss := range s.orderby {
+			if _, ok := orderMap[sss]; ok {
+				continue
+			}
+			orderMap[sss] = true
+
 			if regexpFindOrderByDesc.MatchString(sss) {
 				ss := strings.Replace(sss, "-", "", 1)
 				orderBy = append(orderBy, ss+" desc")
